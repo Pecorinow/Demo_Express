@@ -1,0 +1,22 @@
+{
+  "name": "demo_express",
+  "version": "1.0.0",
+  "description": "demo Express pour les noobs que nous sommes",
+  "main": "app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Pecorinow/Demo_Express.git"
+  },
+  "keywords": [
+    "Express"
+  ],
+  "author": "Caroline Poveda",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Pecorinow/Demo_Express/issues"
+  },
+  "homepage": "https://github.com/Pecorinow/Demo_Express#readme"
+}
