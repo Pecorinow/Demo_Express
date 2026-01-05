@@ -4,6 +4,8 @@
   "description": "demo Express pour les noobs que nous sommes",
   "main": "app.js",
   "scripts": {
+    "start": "node --env-file=.env app.js",
+    "dev" : "node --watch --env-file=.env app.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
@@ -18,5 +20,8 @@
   "bugs": {
     "url": "https://github.com/Pecorinow/Demo_Express/issues"
   },
-  "homepage": "https://github.com/Pecorinow/Demo_Express#readme"
+  "homepage": "https://github.com/Pecorinow/Demo_Express#readme",
+  "dependencies": {
+    "express": "^5.2.1"
+  }
 }

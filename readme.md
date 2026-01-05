@@ -102,13 +102,101 @@ Tout un tas de questions nous son tposées pour config le prijet. Appyuer su rEn
 
 > [!Warning]
 > 📢Attention, il faudra penser à avoir un gitignore en règles à partir de ce moment-là, car les dépendances peuvent peser très lo!urd, donc hors de quetsoin de mettre ça sur git. Soit on le fait à la main (chiant et risqué si on oublie des trucs), soit télécharger un extenson sur VSC "gitignore" qui permet de créer un fichier gitignore en rapport avec un type de projet en particulier. Grâce à cette extension, vous pourrez :
-* appuyer sur f1 ou ctrl + maj + p pour ouvrir la barre des tâches 
-* Sélect Add gitignore
-* Une nouvelle barre de rcehcre apparaît -> commencer à taper Node -> Sélectionner Node dans la liste proposée -> 🎆 BIM notre gitignore s'est rajouté tout seul dans notre projet !
+> * appuyer sur f1 ou ctrl + maj + p pour ouvrir la barre des tâches 
+> * Sélect Add gitignore
+> * Une nouvelle barre de rcehcre apparaît -> commencer à taper Node -> Sélectionner Node dans la liste proposée
+> -> 🎆 BIM notre gitignore s'est rajouté tout seul dans notre projet !
+
+### Créer le fichier app.js
+Créer un fichier à la racine du projet appelé app.js (ou index;js si on a laissé le nom par défaut).
+Rajouter un script pour lancer le fichier app.js :
+```json
+    "scripts" : {
+        "start" : "node app.js"
+    }
+```
 
 
+## Installer Express dans le projet :
+[Express] (https://expressjs.com/) est juste une librairie JS qui permet de créer des web app et des API plus facilement qu'en NodeJS pur.
 
-# Installer Express
+Pour l'installer, taper dans la console :
+```
+npm i express
+```
+ou
 
+```
+npm install express
+```
 
-# Création d'un serveur Web avec Express
+-> Express est maintenant installé dans le projet. Un fichier package-lock.json a été créé(sais po à quoi ça sert), et dans le fichier package.json de base, des dépendances ont été ajoutées, dans lesquelles on voit express !
+
+## Bonus : Récupérer un projet Node/Express :
+Quand on va récup un projet Node (Express, React, Angular...), il faudra refaire un node_modules avec toutes les dépendances du projet, en tapant dans la console :
+```
+npm i
+```
+
+## Création d'un serveur Web avec Express :
+
+Nous allons utiliser la librairie Express pour créer notre serveur. Pour ce faire, écrire dans app.js :
+```
+Voir dans le fichier app.js.
+```
+
+## Restart du serveur en cas de modification :
+Le point chiant de notre serveur actuel, c'est qu'à chaque modif il faut le couper avec **ctrl + c** et le relancer avec npm start.
+💡Mais il existe des solutions pour que le serveur se relance tout seul comme un grand à chaque sauvegarde :
+
+### Méthode 1 : Nodemon (long et chiant, c'était pas mieux avant)
+Avant, il fallait télécharger une librairie appelée Nodemon.
+[Nodemon] est une librairie js qui permet de refresh et restart le server à chaqu esauvegarde.
+Pour l'installer, il fallait :
+```
+npm i -D nodemon
+```
+-D est présent pour l'installe dans les dépendances de dev uniquement.
+
+Il fallait ensuite rajouter le fichier package.json un nouveau script :
+```json
+    "scripts" : {
+        "start" : "node app.js",
+        "dev" : "nodemon app.js"
+    }
+```
+
+### Méthode 2 : Watch natif de Node depuis la version 18+
+Il suffit de rajouter un nouveau script dans package.json :
+```json
+    "scripts" : {
+        "start" : "node app.js",
+        "dev" : "node --watch app.js"
+    }
+```
+Pour lancer le serveur en mode dev, il faudra taper cette fois dans la console :
+```
+npm run dev
+```
+
+## Lrs variables d'envorpnnement :
+Ce sont des variables stockées sur notre machine. On y stocke des onfos de connection, ou propres à la mahcine...
+On évite de les partager.
+
+elles sont accessibles en JS dans un objet process via sa propriété process.env :
+```js
+console.log(process.env);
+```
+Pour créer de nouvelles variables d'environnement, on crée un fichier appelé .env dans lequel on va mettre nos variables d'environnement. Ces infos étant très osuvent confidentielles, ce type de fichier est ignoré par notre .gitignore (on voit qu'il est grisé sur VSC).\
+Comme il ne sera jamais mis sur Git, pour que les autres personnes sachent quelles veriables mettre en place chez eux et avec quel nom (mais sans les valeurs associées), on fait souvent un fichier **.env.example**, qui lui n'est pas grisé, donc pas ignoré.
+
+Mais pour le moment, la variable d'environnement PORT=3000 n'est toujours pas dans la machine, on l'a juste écrit.
+Pour mettr eles variables d'environnement présentes dans le fichier .env dans les variables de la machine, deux solutions :
+* 🦕Version dinosaure : Via la librairie [doten]
+* 🕺Version jeune et cool : Via une nouvelle fonctionnalité native de Node, donc directement dans nos scripts dans le package.json :
+```json
+    "scripts": {
+        "start": "node --env-file=.env app.js",
+        "dev" : "node --watch --env-file=.env app.js",
+    }, // Donc ajouter --env-file=.env au milieu du reste.
+```
