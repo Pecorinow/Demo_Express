@@ -200,3 +200,28 @@ Pour mettr eles variables d'environnement présentes dans le fichier .env dans l
         "dev" : "node --watch --env-file=.env app.js",
     }, // Donc ajouter --env-file=.env au milieu du reste.
 ```
+
+## Architecture du projet :
+
+\> demo_express\
+|- 📁 controllers\
+|- 📁 middlewares\
+|- 📁 routes\   
+|- 📁 services\
+|- app.js\
+|- .env\
+|- package.json
+
+> 1) 📁 routes\ : définition d etoutes les routes de notre API (Verb + url statique + params). = toutes les routes que prendra notre API (on aura un fichier pour toutes les routes d'utilisateurs, un pour les routes de blablabla). La request passe d'abord par là, avant de passer au controller.
+> 2) 📁 controllers\: définition de ce que renvoie l'API. C'est le controler qui renvoie une réponse reçue des services, sans passer par les routes.
+> 3) 📁 services\  : là où on trouve la logique d'intéraction/ d'accès aux données. Renvoie des services, ou des infos au controller.
+> 4) 📁 middleware\ : petit logiciel, ou fonction, qui intercepte la requête (ou une erreur) afin d'y ajouter/consulter des infos et choisir de continuer la requête, ou de l'arrêter. Sert de police à différents niveaux de la requête pour vérifier qu'on a bien les accès à certaines données 👮‍♂️. Il en existe 3 types :
+    router-lvl : middleware de routes, vérifient les accès à certaines routes.
+    app-lvl : middlewares d'application, vérifient toutes les requêtes qui passent, sur toutes les requêtes du serveur 
+    Tout à la fin du chemin (après les services) :  middleware d'erreur, gère les messages spécifiques à certaines erreurs.
+
+    Voir Morgan : middleware qui fait des trucs apparemment, middleware de log ??
+
+## Définition des routes :
+On commence par créer le point d'entrée de toutes nos routes en créant un fichier index.js dans un dossier **routes** : Voir le fichier index.js dans routes.
+

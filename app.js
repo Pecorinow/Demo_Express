@@ -8,15 +8,22 @@ const server = express(); // Création du serveur express.
 const {PORT} = process.env; // = J'extraie ce qui m'intérese (ici PORT) hors de process.env
 
 //! 2) Traiyter les requêtes :
+//* On avait commencé en écrivant tout ça, mais les requêtes se traitent dans d'auters fichiers :
 // En get sur http://localhost:3000/ tout court = '/' :
-server.get('/', (req, res) => { // Ici, on a déjà une méthode get qui est proposé dès qu'on écrit le . juste après server, pas besoin de faire un long GET.
-    res.send({message : 'Ça marche c\'est incroyable'}, 200); // avec la méthode .send, on peut envoyer un message et le numéro de mldhfufr de la réponse.
-})
+// server.get('/', (req, res) => { // Ici, on a déjà une méthode get qui est proposé dès qu'on écrit le . juste après server, pas besoin de faire un long GET.
+//     res.send({message : 'Ça marche c\'est incroyable'}, 200); // avec la méthode .send, on peut envoyer un message et le numéro de mldhfufr de la réponse.
+// })
 
 // Et en get sur http://localhost:3000/products :
-server.get('/products', (req, res) => { 
-    res.send({message :'Regarde mes beaux produits !'}, 200);
-})
+// server.get('/products', (req, res) => { 
+//     res.send({message :'Regarde mes beaux produits !'}, 200);
+// })
+//* Comme les requêtes ne se traitent plus ici, on jffrhg :
+
+// Indiquer que le routing se trouve dans le dossier 📁routes :
+const router = require('./routes'); // = import de l'objet router depuis index.js.
+server.use('/api', router); // = indiquer au serveur d'utiliser le router importé.
+
 
 //! 3) Écouter le serveur sur un port spécifique
 server.listen(3000, () => {
