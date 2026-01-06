@@ -1,17 +1,24 @@
 //* TOUT COMMENCE ICI :
-// Ce fichier est le pillier de notre serveur, c'est ici qu'on va
-// 1) Créer le serveur,
+// Ce fichier est le pillier de notre serveur, c'est ici qu'on va :
+// 1) Créer notre serveur,
 // 2) Importer le routeur depuis le dossier routes (où sont configurées les différentes routes possibles) et l'utiliser,
 // 3) Écouter le serveur sur le port 3000.
 
 console.log('serveur node ok 🙂');
 
 //! 1)Importer Express + créer le serveur
-const express = require('express'); // Import depuis le node_module la librairie qui s'appelle express.
-const server = express(); // Création du serveur express.
+const express = require('express');
+    // Import depuis le node_module la librairie qui s'appelle express.
+const server = express();
+    // Création du serveur express.
 
 //? Récupération des variables d'environnement :
-const {PORT} = process.env; // = J'extraie ce qui m'intérese (ici PORT) hors de process.env
+const {PORT} = process.env;
+    // = J'extraie ce qui m'intérese (ici PORT, le port surlequel on va lancer le serveur) hors de process.env
+
+//? Pour paramètrer le fait que notre API doit comprendre que du JSON arrive :
+server.use(express.json());
+    // = Indique que le serveur doit utiliser un petit middleware, la fonction json(), pour lire le JSON !
 
 //! 2) Traiter les requêtes :
 //* On avait commencé en écrivant tout ça, mais les requêtes se traitent dans d'auters fichiers :
@@ -29,8 +36,9 @@ const {PORT} = process.env; // = J'extraie ce qui m'intérese (ici PORT) hors de
 //* Comme les requêtes ne se traitent plus ici, on importe le router depuis le fichier index.js (dans le dossier routes) :
 
 // Indiquer que le routing se trouve dans le dossier 📁routes :
-const router = require('./routes'); // = import de l'objet router depuis index.js.
+const router = require('./routes'); // = import de l'objet router, le routeur principal, depuis index.js
 server.use('/api', router); // = indiquer au serveur d'utiliser le router importé.
+
 //* On ajoute /api comme condition pour lancer le router, pour préciser qu'on veut avoir accès à l'API en backend, donc à l'url http://localhost:3000/api/tasks, et pas à la liste des tâches (ou catégories, si l'url finissait par category) qui apparaîtrait en front si on lançait http://localhost:3000/tasks sans le /api.
 // -> Après, la suite se passe dans le fichier index.js.
 

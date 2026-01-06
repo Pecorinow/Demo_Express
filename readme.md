@@ -192,7 +192,7 @@ Comme il ne sera jamais mis sur Git, pour que les autres personnes sachent quell
 
 Mais pour le moment, la variable d'environnement PORT=3000 n'est toujours pas dans la machine, on l'a juste écrit.
 Pour mettr eles variables d'environnement présentes dans le fichier .env dans les variables de la machine, deux solutions :
-* 🦕Version dinosaure : Via la librairie [doten]
+* 🦕Version dinosaure : Via la librairie [dotenv]
 * 🕺Version jeune et cool : Via une nouvelle fonctionnalité native de Node, donc directement dans nos scripts dans le package.json :
 ```json
     "scripts": {
@@ -200,6 +200,7 @@ Pour mettr eles variables d'environnement présentes dans le fichier .env dans l
         "dev" : "node --watch --env-file=.env app.js",
     }, // Donc ajouter --env-file=.env au milieu du reste.
 ```
+Les requêtes arrivent dans l'application (_app.js_) et sont dispatchés vers les fichiers de routes (_dossier routes_). En fonction de l'url, du verbe et des potentiels paramètres de routes, on déclenchera la bonne fonction du controller de la ressource  (_dossier controllers_). Ces controllers se chargent de la logique API, ils vont appeler des services (_dossier services_) qui eux se chargent d'intéragir avec les données. Le controlleur va ensuite, en fonction du résultat obtenu, répondre avec le bon code à la requête.
 
 ## Architecture du projet :
 
@@ -285,3 +286,52 @@ const taskRouter = require('./task.router');
 // permet d'indiquer que notre router de base doit utiliser, si l'url est localhost:3000/api/tasks, le task routeur pour la suite
 router.use('/tasks', taskRouter)
 ```
+
+### Les controllers
+
+## Logiciels test API :
+Pour pouvoir tester nos routes API, plusieurs outils :
+* [Postman](https://www.postman.com/downloads/)
+* [Insomnia](https://insomnia.rest/)
+* [Thunder Client](https://www.thunderclient.com/) Extension VSC qui permet de tout faire depuis VSC (Aude ne l'aime pas), permet d'importer son environnement de travail mais pas de l'exporter, donc on ne peut pas "donner" son travail à un autre.
+
+Aude choisit : INSOMNIA ! 🎆🫵👁️
+
+## Télécharger le logiciel
+Créer un premier projet (ici, appelé Express)
+Créer un document (ici, appelé Demo_Express)
+
+On peut exporter/importer ce doc, avec toutes les requêtes et tous les tests qu'on aura faits. 
+
+Bouton Collection : permet d'ajouter nos requêtes.
+Bouton + : New Folder -> l'appeler Tasks.
+Petite flèche : HTTP Request -> Créer une nouvelle request.
+Tableau de gauche : requete / Tableau de droite: réponse.
+
+Dans dossier Tasks :
+On crée une request appelée GetAll = voir toutes les tâches, avec GET http://localhost:3000/api/tasks
+Et une request GetById = voir une tâche en particulier, avec GET http://localhost:3000/api/tasks/:id
+-> Send -> On voit la réponse dans le tableau de droite !
+
+GET -> pas de Body (pcq on va chercher une info, on n'envoie rien)
+
+En POST :
+Envoyer un Body :
+Si texte -> En JSON : c'est un objet qu'on envoie -> entre {}.
+ex : 
+```
+{
+	"name": "Nettoyer la litière de Fenouil 🌸",
+	"category": "Maison",
+	"by": "Caroline",
+	"for": "Caroline"
+}
+```
+Attention : pour que le JSON puisse être lu par le serveur, ajouter une ligne avant le point 2 de app.js :
+```
+server.use(express.json());
+```
+
+## Exporter un document :
+Cliquer sur Demo_Express -> Export -> Sélect les actions à exporter (GET, POST...) -> Export dans un dossier insomnia dans notre projet.
+
