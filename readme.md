@@ -223,5 +223,65 @@ Pour mettr eles variables d'environnement présentes dans le fichier .env dans l
     Voir Morgan : middleware qui fait des trucs apparemment, middleware de log ??
 
 ## Définition des routes :
+### Point d'entrée :
 On commence par créer le point d'entrée de toutes nos routes en créant un fichier index.js dans un dossier **routes** : Voir le fichier index.js dans routes.
 
+Dans ce fichier index.js :
+
+```
+const router = require('express').Router();
+
+router.get('/', (req, res) => {
+    res.send("Bienvenue sur notre API de gestion de tâches", 200)
+});
+
+module.exports = router;
+```
+
+
+Dans le fichier app.js (après création server et avant listen) :
+
+```
+const router = require("./routes");
+server.use('/api', router);
+```
+
+### Ajouter d'autres routes
+
+Pour bien architecturer notre application, on va essayer de gérer les routes de chaque ressource individuellement. Pour cela, on va créer un routeur pour chaque type de ressources et faire le lien entre notre routeur d'entrée (index.js) et nos sous-routeurs.
+Pour créer un sous-routeur, on crée un fichier nomRessource.router.js.
+_exemple avec task.router.js_ :
+
+```
+const taskRouter = require('express').Router(); //création du sous-routeur task
+
+// en get sur localhost:3000/api/tasks/
+taskRouter.get('/', (req, res) => {
+    res.send('Voici toutes les tâches', 200)
+})
+
+// :id segment dynamique
+// en get sur localhost:3000/api/tasks/XX
+taskRouter.get('/:id', (req, res) => {
+    const id = req.params.id;
+    res.send(`Voici la tâche numero ${id}`)
+})
+
+// en post sur localhost:3000/api/tasks/
+taskRouter.post('/', (req, res) => {
+    res.send('Tâche ajoutée avec succès', 200)
+})
+
+//export de notre routeur pour pouvoir l'importer depuis un autre fichier
+module.exports = taskRouter;
+```
+
+Pour donner accès à ce sous-routeur depuis notre fichier principal index.js :
+
+```
+// import du task routeur 
+const taskRouter = require('./task.router');
+
+// permet d'indiquer que notre router de base doit utiliser, si l'url est localhost:3000/api/tasks, le task routeur pour la suite
+router.use('/tasks', taskRouter)
+```
