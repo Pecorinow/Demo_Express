@@ -225,7 +225,7 @@ Les requêtes arrivent dans l'application (_app.js_) et sont dispatchés vers le
 
 ## Définition des routes :
 ### Point d'entrée :
-On commence par créer le point d'entrée de toutes nos routes en créant un fichier index.js dans un dossier **routes** : Voir le fichier index.js dans routes.
+On commence par créer le point d'entrée de toutes nos routes en créant un fichier **index.js** dans un dossier **routes** : Voir le fichier index.js dans routes.
 
 Dans ce fichier index.js :
 
@@ -287,7 +287,84 @@ const taskRouter = require('./task.router');
 router.use('/tasks', taskRouter)
 ```
 
-### Les controllers
+### Autre manière d'écrire les routes :
+
+### Les controllers :
+Les controller ssont les endroits où on va gérer la requêtes (ce qui entre en req et sort en res). C'est ce qui décide d'où vont être envoyées les request et si elles peuvent ressortir en response.
+En général, on fait un controller par type de ressources -> Ici, on aura un task.controller, un category.controller...
+Un controller est un objet qui contient des fonctions à exécuter.
+Exemple : task.controller.js :
+```
+// Création de notre taskController
+const taskController = {
+
+}
+
+// On le rend importable en l'exportant :
+module.exports = taskController;
+```
+Chaque fonction représentera une action (getAll, insert...) qu'on peut faire sur la ressource en question :
+_task.controller.js_ :
+```js
+// Création de notre taskController :
+const taskController = {
+    //On va créer autant de fonctions qu'il y a de fonctionnalités pour la tâche (getAll, tegById, insert, delete...), en leur donnant pour bien faire le même nom que ce qu'on a créé sur Insomnia :
+    getAll : (req, res) => {},
+
+    getbyId : (req, res) => {},
+
+    getbyUser : (req, res) => {},
+
+    insert : (req, res) => {},
+
+    update : (req, res) => {},
+
+    updatedStatus : (req, res) => {},
+
+    delete : (req, res) => {}
+
+}
+```
+Attention, pour le moment il n'y a pas de code écrit dans les {}, ça va donc momentanément "casser" les requests.
+
+Il ne nous reste plus qu'à relier la route avec sa fonctionnalité **dans le taskRouter** :
+_task.router.js_ :
+```js
+// importer le controleur qu'on vient de créer
+const taskController = require('../controllers/task.controller');
+
+// On relie ensuite chaque route à sa fonctionnalité
+taskRouter.route('/')
+    .get(taskController.getAll)
+    .post(taskController.insert)
+
+taskRouter.route('/:id')
+    .get(taskController.getById)
+    .put(taskController.update)
+    .delete(taskController.delete)
+    .patch(taskController.updateStatus)
+
+taskRouter.get('/user/:name', taskController.getByUser)
+
+```
+Pour que notre request ne soit pas infinie alors que nous n'avons pas encore de code dans notre controller, nous pouvons mettre fin à la request en envoyant un code 501 : Not implemented - qui signifie que la route existe mis que le code derrière n'a pas été implémenté (ou développé) par les dev.
+```js
+const taskController = {
+    getAll : (req, res) => {res.send(501)}
+}
+```
+
+### Les DTO :
+Les DTO sont des représentations d'objets telles qu'elles entrent et sortent de l'API. Parfois à l'insertion l'objet n'est pas identique à celui en DB, donc on aura besoin d'un DTO d'entrée.Parfois, les objets renvoyés par l'API auront aussi besoin d'avoir des données ajoutées ou supprimées, pareil on aura besoin d'un DTO.
+
+DONC souvent, nos objet en entrée (req) et en sortie (res) ne possèdent pas les mêmes infos. 
+ex : un objet en entrée (req) ne possédera pas d'id, mais il possédera un password, par contre en sortie il aura un id attribué par l'API, mais pas de password parce que cette info ne doit pas sortir de la BD.
+
+ex : à la création d'un compte, le paramètre 'isActive' n'est pas là en entrée, mais il est là en sortie après la création du compte.
+
+
+
+
 
 ## Logiciels test API :
 Pour pouvoir tester nos routes API, plusieurs outils :
