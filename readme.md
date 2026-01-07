@@ -291,7 +291,7 @@ router.use('/tasks', taskRouter)
 
 ### Les controllers :
 Les controller ssont les endroits où on va gérer la requêtes (ce qui entre en req et sort en res). C'est ce qui décide d'où vont être envoyées les request et si elles peuvent ressortir en response.
-En général, on fait un controller par type de ressources -> Ici, on aura un task.controller, un category.controller...
+En général, on fait **un controller par type de ressources** -> Ici, on aura un task.controller, un category.controller...
 Un controller est un objet qui contient des fonctions à exécuter.
 Exemple : task.controller.js :
 ```
@@ -354,16 +354,31 @@ const taskController = {
 }
 ```
 
-### Les DTO :
-Les DTO sont des représentations d'objets telles qu'elles entrent et sortent de l'API. Parfois à l'insertion l'objet n'est pas identique à celui en DB, donc on aura besoin d'un DTO d'entrée.Parfois, les objets renvoyés par l'API auront aussi besoin d'avoir des données ajoutées ou supprimées, pareil on aura besoin d'un DTO.
+>Les DTO :
+>Les DTO (Data Object Transfert) sont des représentations d'objets telles qu'elles entrent et sortent de l'API. Parfois à l'insertion l'objet n'est pas identique à celui en DB, donc on aura besoin d'un DTO d'entrée.Parfois, les objets renvoyés par l'API auront aussi besoin d'avoir des données ajoutées ou supprimées, pareil on aura besoin d'un DTO.
 
-DONC souvent, nos objet en entrée (req) et en sortie (res) ne possèdent pas les mêmes infos. 
-ex : un objet en entrée (req) ne possédera pas d'id, mais il possédera un password, par contre en sortie il aura un id attribué par l'API, mais pas de password parce que cette info ne doit pas sortir de la BD.
+>DONC souvent, nos objet en entrée (req) et en sortie (res) ne possèdent pas les mêmes infos. 
+>ex : un objet en entrée (req) ne possédera pas d'id, mais il possédera un password, par contre en sortie il aura un id attribué par l'API, mais pas de password parce que cette info ne doit pas sortir de la BD.
 
-ex : à la création d'un compte, le paramètre 'isActive' n'est pas là en entrée, mais il est là en sortie après la création du compte.
+>ex : à la création d'un compte, le paramètre 'isActive' n'est pas là en entrée, mais il est là en sortie après la création du compte.
 
+### Les Services :
+C'ets l'endroit où on va gérer les accès aux données et la logique propre à la recherche / crééaton / suppression ddes données. Nos contolleurs vont appeler les bonne sméthodes dans les services appropriés.
+De nouveau, on fait en général **un service par type de ressource**.
+Dans un premier temps, on va travailler avec une **simulation** de DB (fake DB) avec de simples tableaux d'objets JavaScript.
 
+>[!Warning]
+>Nos tableaux ne sont pas sauvegardés et seront remis à 0 à chaque lancement du serveur, donc à chaque sauvegarde de modification du code !
 
+>[!Important]
+> Plus tard, nous verrons comment [se connecter à une base de données]
+(#connecter-son-api-à-une-db)
+
+>[!Note]
+>Certaines données devront être cryptées dans la DB, notamment les mots de passe pour qu'elles ne soient pas lisible sà l'oeil nu. [Nous le ferons dans les services] (#hasher-des-données), car ça doit se faire AVANT l'insertion dans la DB !
+
+1) Création d'un dossier "services", et dedans, d'un fichier "task.service.js". Pour le moment, on va créer un dossier "fake" et un fichier "fakeTask.service.js" et travailler avec ça.
+2) Création d'un fichier fakeDB.js, qui représente notre fausse DB.
 
 
 ## Logiciels test API :

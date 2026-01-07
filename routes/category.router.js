@@ -5,18 +5,18 @@ const categoryController = require('../controllers/category.controller.js');
 
 const categoryRouter = require('express').Router();
 
-categoryRouter.get('/').get(categoryController.getAll)
+categoryRouter.get('/',categoryController.getAll)
 // categoryRouter.get('/', (req, res) => {
 //     res.send("Voici toutes les catégories", 200)
 // })
 
-categoryRouter.get('/:id').get(categoryController.getbyId)
+categoryRouter.get('/:id', categoryController.getbyId)
 // categoryRouter.get('/:id', (req, res) => {
 //     const id = req.params.id;
 //     res.send(`Voici la catégorie numéro ${req.params.id}`, 200)
 // })
 
-categoryRouter.post('/').get(categoryController.insert)
+categoryRouter.post('/', categoryController.insert)
 // categoryRouter.post('/', (req, res) => {
 //     const categoryToInsert = req.body;
 //     res.send(categoryToInsert, 201);
@@ -24,7 +24,7 @@ categoryRouter.post('/').get(categoryController.insert)
 
 // })
 
-categoryRouter.put('/:id').get(categoryController.update)
+categoryRouter.put('/:id', categoryController.update)
 // categoryRouter.put('/:id', (req, res) =>{
 //     const categoryId = req.params.id;
 //     const categoryUpdated = req.body;
@@ -33,7 +33,7 @@ categoryRouter.put('/:id').get(categoryController.update)
 //     res.send(categoryUpdated, 200);
 // })
 
-categoryRouter.put('/:id').get(categoryController.delete)
+categoryRouter.put('/:id', categoryController.delete)
 // categoryRouter.delete('/:id', (req, res) => {
 //     res.sendStatus(204);
 // })
