@@ -12,7 +12,13 @@ const fakeTaskService = {
 
     //* getById : Créons une fonction findById() pour récupérer une tâche en particulier selon son id :
     findById : (id) => {
-        return tasks.find(task => task.id === id) // = Parmi les tâches, on cherche la tâche dont l'id correspond à celui entre ().
+        // 2) :
+        return tasks.find(task => task.id === id);
+        // = const task = tasks.find(task => task.id === id);
+        // return task;
+        // = Parmi les tâches de la DB, on parcourt chaque tâche et on cherche la tâche (task => ) dont l'id correspond à celui entre ().    (Voir 1) dans le taskController.
+        // Ce que la fonction renvoie au taskController, c'est SOIT la task dont l'id = l'id d'une autre catégorie déjà existante SOIT undefined si elle n'existe pas déjà. 
+        // Retouner au 3) dans le taskController.
     },
 
     //* insert : fonction create() :
@@ -39,7 +45,20 @@ const fakeTaskService = {
         // On renvoie la nouvelle tâche au controller :
         return taskToAdd;
 
+    },
+
+    findToUser : (userName) => {
+        return tasks.filter(task => task.to === userName)
+    },
+
+    findFromUser : (userName) => {
+        return tasks.filter(task => task.by === userName)
     }
+
+
+
+
+
 }
 
 module.exports = fakeTaskService;

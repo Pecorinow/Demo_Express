@@ -22,7 +22,7 @@ taskRouter.route('/:id')
     
     .patch(taskController.updatedStatus)
 
-taskRouter.get('/user/:name', taskController.getbyUser)
+taskRouter.get('/user/:name', taskController.getByUser)
 
 //* Rendre le routeur exportable dans d'auters fichiers :
 module.exports = taskRouter;

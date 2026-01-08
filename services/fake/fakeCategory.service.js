@@ -1,5 +1,4 @@
 const {categories} = require('./fakeDB');
-const { findById } = require('./fakeTask.service');
 
 const fakeCategoryService = {
     find : () => {
@@ -19,6 +18,13 @@ const fakeCategoryService = {
 
         return categoryToAdd;
 
+    },
+
+    findByName : (newCategoryName) => {
+        return categories.find(category => category.name === newCategoryName)
+
+        // Aussi possible : 
+        // return categories.some(category => category.name === newCategoryName) -> some() renvoie un booléen true si la catégorie existe, un false si elle n'existe pas.
     }
 }
 

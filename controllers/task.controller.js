@@ -43,17 +43,22 @@ const taskController = {
      */
     getbyId : (req, res) => {
         // Les paramètres récupérés seront toujour sous forme de chaine de caractères. Si on veut que notre id soit un nombre (pour pouvoir faire un ===), il faut faire un parse (soit avec parsInt, soit avec +) :
-        const id = +req.params.id; // = on va chercher l'id dans les paramètres de la request (pcq il ne se trouve pas ailleurs)
+        const id = +req.params.id;
+        // = 1) On va chercher l'id dans les paramètres de la request (pcq il ne se trouve pas ailleurs)
+        // Voir 2) dans le fakeTaskService
+
         const task = fakeTaskService.findById(id);
-        // Si l'id n'existe pas = si pas de tâche correspondante...
+        // = 3) On crée la variable task, qui correspond à la task cherchée par la fonction finsById => task = la valeur renvoyée par le return du taskService !
+
+        // 4) Si l'id n'existe pas = si pas de tâche correspondante...
         if(!task) {
             res.status(404).json( {
                 statusCode : 404,
                 message : "Tâche non trouvée"})
-                // = ...alors on renvoie un ststus 404 et un message json.
+                // = ...alors on renvoie un status 404 et un message json.
         }
 
-        // Mais si la tâche existe :
+        // ...Sinon, si la tâche existe :
         res.status(200).json(task); 
  
     },
@@ -63,7 +68,28 @@ const taskController = {
      * @param {Request} req 
      * @param {Response} res 
      */
-    getbyUser : (req, res) => {res.send(501)},
+    getByUser : (req, res) => {
+        // ! finir la fonctionnalité du getByUser. Il vous faudra, dans le service, une fonction qui recherche toutes les tâches de l’utilisateur. 
+        const userName = req.params.name;
+        //* ATTENTION : le "name" est écrit comme ça d'après ce qu'on a écrit dans le taskRouter : '/user/:name', pas d'après le "to" de la DB !!
+
+        tasksOfUser = fakeTaskService.findToUser(userName);
+
+        const tasksToSend = {
+            userName : userName,
+            tasks : tasksOfUser
+        }
+
+        if(tasksOfUser) {
+            res.status(200).json(tasksToSend);
+        } else {
+        res.status(404).json( {
+            statusCode : 404,
+            message : "Aucune tâche ne correspond à cet utilisateur."});
+        }
+        
+
+    },
 
     /**
      * 
@@ -75,16 +101,14 @@ const taskController = {
         const taskToAdd = req.body;
             // = On crée une variable taskToAdd qui correspond au body de la request.
 
-       
-
-        //* Opérations APRÈS être passé par fakeTaskService
         const addedTask = fakeTaskService.create(taskToAdd);
-            // = on crée une nouvelle variable pour la tâche ajoutée, addedTask, qui a été ajoutée à la DB via la fonction create(taskToAdd)
+            // = on crée une nouvelle variable pour la tâche ajoutée, addedTask, qui va être ajoutée ajoutée à la DB via la fonction create(taskToAdd)
             // Cette fonction va remanier taskToAdd, lui donner un id, et la renvoyer à taskController pour créer addedTask.
-
+        
+        //* Opérations APRÈS être passé par fakeTaskService
         // Pour respecter les principes REST, on doit ajouter à la réponse une url qui permet de consulter la valeur ajoutée :
         res.location(`/api/tasks/${addedTask.id}`);
-            // Au lieu d'écrire juste/api/tasks/id, on demande l'id de la valeur qui vient d'être créée, addedTask, et à laquelle l'API a attribué un id (on demande l'id de addedTask, pcq taskToAdd n'a pas d'id)
+            // Au lieu d'écrire juste /api/tasks/id, on demande l'id de la valeur qui vient d'être créée, addedTask, et à laquelle l'API a attribué un id (on demande l'id de addedTask, pcq taskToAdd n'a pas d'id)
         res.status(201).json(addedTask)
     },
 
@@ -93,21 +117,29 @@ const taskController = {
      * @param {Request} req 
      * @param {Response} res 
      */
-    update : (req, res) => {res.send(501)},
+    update : (req, res) => {
+        //! finir la fonctionnalité update. Le principe est le même que le updateStatus mais vous devez modifier TOUT l’objet
+    },
 
     /**
      * 
      * @param {Request} req 
      * @param {Response} res 
      */
-    updatedStatus : (req, res) => {res.send(501)},
+    updatedStatus : (req, res) => {
+        //! finir la fonctionnalité updateStatus. Il vous faudra, dans le service, une fonction qui prend en paramètre l’id et le nouveau statut, recherche la tâche correspondante et, si la tâche a été trouvée, modifie son statut. Votre contrôleur devra renvoyer 404 si la tâche que vous essayez de modifier n’existe pas. Sinon, renvoie la tâche avec les nouvelles modifications. 
+
+    },
 
     /**
      * 
      * @param {Request} req 
      * @param {Response} res 
      */
-    delete : (req, res) => {res.send(501)}
+    delete : (req, res) => {
+        //! finir la fonctionnalité delete. Faire une fonction dans le service qui reçoit l’id de la tâche à supprimer. Dans un premier temps, vérifier si la tâche existe, si pas, renvoyez false. Si elle existe, la supprimer du tableau (tips : filter ) et renvoyer true. Votre controleur, quand il utilisera la méthode du service, obtiendra un booléen pour savoir si oui ou non, la tâche a été supprimée. 
+
+    }
 
 }
 

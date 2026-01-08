@@ -17,7 +17,7 @@ const tasks = [
         name : "Demander le statut BIM",
         before : "2026-10-2",
         by : "Caroline",
-        to : "Future Caroline 🤖",
+        to : "FutureCaroline",
         category : 1,
         isDone : false
     },
