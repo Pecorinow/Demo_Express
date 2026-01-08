@@ -38,12 +38,12 @@ collection:
             send: true
             store: true
           rebuildPath: true
-      - url: ""
+      - url: http://localhost:3000/api/tasks/1
         name: GetById
         meta:
           id: req_26dacb8e16f34c6cb68f95227184fbc5
           created: 1767696867338
-          modified: 1767696884394
+          modified: 1767793361193
           isPrivate: false
           description: ""
           sortKey: -1767696867338
