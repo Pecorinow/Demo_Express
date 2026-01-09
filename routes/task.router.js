@@ -3,6 +3,8 @@
 // Importer le task.controller :
 const taskController = require('../controllers/task.controller');
 
+const idValidatorMiddleware = require('../middlewares/idValidator.middleware');
+
 
 const taskRouter = require('express').Router();
     // = j'utilise express pour créer un routeur spécial pour les tâches, appelé taskRouter.
@@ -13,14 +15,14 @@ taskRouter.route('/')
     
     .post(taskController.insert)
     
-taskRouter.route('/:id')
-    .get(taskController.getbyId)
+taskRouter.route('/:id') // On met un idValidtaorMiddleware sur tout ece qui nécessite un id :
+    .get(idValidatorMiddleware(), taskController.getbyId)
     
-    .put(taskController.update)
+    .put(idValidatorMiddleware(), taskController.update)
     
-    .delete(taskController.delete)
+    .delete(idValidatorMiddleware(), taskController.delete)
     
-    .patch(taskController.updatedStatus)
+    .patch(idValidatorMiddleware(), taskController.updatedStatus)
 
 taskRouter.get('/user/:name', taskController.getByUser)
 

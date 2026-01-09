@@ -25,7 +25,9 @@ const fakeCategoryService = {
 
         // Aussi possible : 
         // return categories.some(category => category.name === newCategoryName) -> some() renvoie un booléen true si la catégorie existe, un false si elle n'existe pas.
-    }
+    },
+
+    
 }
 
 module.exports = fakeCategoryService;

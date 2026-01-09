@@ -20,6 +20,10 @@ const {PORT} = process.env;
 server.use(express.json());
     // = Indique que le serveur doit utiliser un petit middleware, la fonction json(), pour lire le JSON !
 
+// Utilisation d'un middleware qu'on a fait :
+const logMiddleware = require('./middlewares/log.middleware'); //! Attention, cette ligne s'ajoute toute seule dès qu'on écrit la ligne suivante server.use => la chercher dans le fichier et la replacer avant !
+server.use(logMiddleware()); // = J'utiliser le middleware importé à la ligne précédente => RENVOIE AU LOG.MIDDLEWARE !
+
 //! 2) Traiter les requêtes :
 //* On avait commencé en écrivant tout ça, mais les requêtes se traitent dans d'auters fichiers :
 // En get sur http://localhost:3000/ tout court = '/' :

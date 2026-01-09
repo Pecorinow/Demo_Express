@@ -380,6 +380,22 @@ Dans un premier temps, on va travailler avec une **simulation** de DB (fake DB) 
 1) Création d'un dossier "services", et dedans, d'un fichier "task.service.js". Pour le moment, on va créer un dossier "fake" et un fichier "fakeTask.service.js" et travailler avec ça.
 2) Création d'un fichier fakeDB.js, qui représente notre fausse DB.
 
+### Les middlewares :
+En français intergiciel, un iddleware est une fonction dans laquelle nous avons accès à la request (req), la réponse (res), et une fonction qui permet de continuer le processus de la request.
+Un middleware va donc nous permettre d'intercepter n'importe quelle request afin d'y faire des vérifications, des modifs, et de déterminer si la request peut continuer ou pas.
+
+Il existe plusieurs types de middlewares :
+* **Built-in** : Les middlewares déjà présents dans express.
+(ex : la foncton use() dans app.js)
+* **Third-party** : les middlewares qui viennent de librairies externes et qui sont déjà tout faits.
+ex : [Multer](https://www.npmjs.com/package/multer), un des plus connus, qui permet de récup les images d'une req, les stocker sur le serveur...
+* **Home made** : les middlewaresq qu'on faits nous-mêmes.
+
+...qu'on peut mettre à 3 endroits différents :
+* **Application** (App-lvl Middleware) : middleware qui sera activé sur toute l'app, donc à chaque requête !
+* **Route** (Router-lvl Middleware) : middleware qu'on met seulement sur certaines routes
+* **Erreur** (Handler-error Middleware) : Doit être mis en avant-dernier, juste avant le lancement du serveur. Permet d'attraper toutes les erreurs qui n'ont pas été gérées par notre API (souvent dans le but d'en faire un fichier de log pour avoir des traces du plantage sans que l'app ne plante pour autant).
+
 
 ## Logiciels test API :
 Pour pouvoir tester nos routes API, plusieurs outils :
