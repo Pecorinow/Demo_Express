@@ -146,7 +146,7 @@ const taskController = {
         }
 
         // Si la tâche existe, on peut la modifier :
-        const updatedTask = fakeTaskService.update(id, task);
+        const updatedTask = fakeTaskService.update(id, newTasksInfos);
         res.status(200).json(updatedTask);
         
         

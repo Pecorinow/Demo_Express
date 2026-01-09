@@ -5,6 +5,8 @@ const taskController = require('../controllers/task.controller');
 
 const idValidatorMiddleware = require('../middlewares/idValidator.middleware');
 
+const nameValidatorMiddleware = require('../middlewares/nameValidator.middleware');
+
 
 const taskRouter = require('express').Router();
     // = j'utilise express pour créer un routeur spécial pour les tâches, appelé taskRouter.
@@ -13,16 +15,16 @@ const taskRouter = require('express').Router();
 taskRouter.route('/')
     .get(taskController.getAll)
     
-    .post(taskController.insert)
+    .post(nameValidatorMiddleware(), taskController.insert) //
     
 taskRouter.route('/:id') // On met un idValidtaorMiddleware sur tout ece qui nécessite un id :
     .get(idValidatorMiddleware(), taskController.getbyId)
     
-    .put(idValidatorMiddleware(), taskController.update)
+    .put(idValidatorMiddleware(), nameValidatorMiddleware(), taskController.update) //
     
     .delete(idValidatorMiddleware(), taskController.delete)
     
-    .patch(idValidatorMiddleware(), taskController.updatedStatus)
+    .patch(idValidatorMiddleware(), taskController.updatedStatus) //
 
 taskRouter.get('/user/:name', taskController.getByUser)
 

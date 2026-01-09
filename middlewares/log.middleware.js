@@ -7,9 +7,9 @@ const logMiddleware = () => {
      * @param {Response} res
      */
 
-    // Un middleware = fonction qui doit revoyer la requête :
+    // Un middleware = fonction qui doit renvoyer la requête :
     return (req, res, next) => {
-        // req contient la request entrante où on ira chercher les infoq qui nous intéressent
+        // req contient la request entrante où on ira chercher les infos qui nous intéressent
         // res contient la réponse, et nous permettra de stopper la request si nécessaire.
         // next est une fonction qu'on exécutera pour permettre à la requete de continuer sa route.
         const method = req.method;
