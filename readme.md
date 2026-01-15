@@ -179,7 +179,7 @@ Pour lancer le serveur en mode dev, il faudra taper cette fois dans la console :
 npm run dev
 ```
 
-## Lrs variables d'envorpnnement :
+## Lrs variables d'environnement :
 Ce sont des variables stockées sur notre machine. On y stocke des onfos de connection, ou propres à la mahcine...
 On évite de les partager.
 
@@ -443,3 +443,31 @@ server.use(express.json());
 ## Exporter un document :
 Cliquer sur Demo_Express -> Export -> Sélect les actions à exporter (GET, POST...) -> Export dans un dossier insomnia dans notre projet.
 
+# Web API avec Mongoose 
+## Connecter son API avec une DB
+### Mongoose (MongoDB - NoSQL)
+
+Pour connecter notre API à une base de données, nous allons utiliser un ORM (Object-Relational Mapping) ou ODM (Object-Document Mapping). Il s'agit d'un outil (généralement une librairie) où la connection est facilitée et les requêtes aussi. Cet outil nous permettra aussi très facilement de transformer nos objets js en model de donnée et inversement.
+
+### Sequelize (Multi - SQL)
+[Sequelize](https://sequelize.org/) est l'ORM le plus utilisé quand on fait du SQL. [TypeOrm](https://typeorm.io/) est son grand frère, prévu si on fait notre API en TypeScript.
+
+### Mongoose (MongoDB - NoSQL)
+[Mongoose](https://mongoosejs.com/) est l'ODM prévu pour travailler avec MongoDB.
+
+## Installe Mongoose :
+```
+npm i mongoose
+```
+Et bim c'est installé.
+
+Dans le fichier app.js :
+Installer la connection avant les routes, donc avant le point 2) !!
+
+[...incoming...] 
+
+## Hasher des données
+
+<hr>
+
+## 

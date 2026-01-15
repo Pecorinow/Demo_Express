@@ -14,17 +14,14 @@ const taskRouter = require('express').Router();
 // Autre manière d'écrire les routes :
 taskRouter.route('/')
     .get(taskController.getAll)
+    .post(nameValidatorMiddleware(), taskController.insert)
+        // middleware créé dans nameValidator.middleware.js !
     
-    .post(nameValidatorMiddleware(), taskController.insert) //
-    
-taskRouter.route('/:id') // On met un idValidtaorMiddleware sur tout ece qui nécessite un id :
+taskRouter.route('/:id') // On met un idValidtaorMiddleware sur tout ce qui nécessite un id :
     .get(idValidatorMiddleware(), taskController.getbyId)
-    
     .put(idValidatorMiddleware(), nameValidatorMiddleware(), taskController.update) //
-    
     .delete(idValidatorMiddleware(), taskController.delete)
-    
-    .patch(idValidatorMiddleware(), taskController.updatedStatus) //
+    .patch(idValidatorMiddleware(),nameValidatorMiddleware(), taskController.updatedStatus)
 
 taskRouter.get('/user/:name', taskController.getByUser)
 

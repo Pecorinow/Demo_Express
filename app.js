@@ -6,6 +6,8 @@
 
 console.log('serveur node ok 🙂');
 
+
+
 //! 1)Importer Express + créer le serveur
 const express = require('express');
     // Import depuis le node_module la librairie qui s'appelle express.
@@ -23,6 +25,35 @@ server.use(express.json());
 // Utilisation d'un middleware qu'on a fait :
 const logMiddleware = require('./middlewares/log.middleware'); //! Attention, cette ligne s'ajoute toute seule dès qu'on écrit la ligne suivante server.use => la chercher dans le fichier et la replacer avant !
 server.use(logMiddleware()); // = J'utiliser le middleware importé à la ligne précédente => RENVOIE AU LOG.MIDDLEWARE !
+
+//----------------------------
+//-----Connection à la DB-----
+//----------------------------
+
+// On va créer un middleware qui établit une connexion à chaque requête.
+// -> Utiliser les app-lvl middlewares :
+// Pour établir la connexion, on a besoin d'abord d'importer mongoose :
+const mongoose = require('mongoose');
+server.use( async(req, res, next) => {
+    // À partir de l'objet mongoose importé plus haut, on peut créer une connection :
+    mongoose.connect('url')
+    // => si on passe la souris sur connect : -> Promise :
+    // Vu que la connection peut échouer, la méthode de connexion nous renvoie une promesse
+    // => Soit utiliser un try/catch (version bof), soit un Async/await, avec un try/catch (plus propre) :
+    try {
+        // Essayons de se connecter :
+        await mongoose.connect('pouet');
+        // + Ajouter un async dans la connexion au serveur plus haut (server.use(async(...))).
+        console.log("Successfully connected to the DB !");
+        
+        next();// Si la req fonctionne, on permet à la requête de continuer sa route.
+
+    } // Et si ça ne marche pas :
+    catch(err) {
+        console.log(`Connection Failed \n[Reason]\n ${err}`) // les \n = passage à la ligne du message.
+        res.status(500).json( {statusCode : 500, message : "Oupsi, impossible de se connecter à la DB 🙂‍↔️ "})
+    }
+})
 
 //! 2) Traiter les requêtes :
 //* On avait commencé en écrivant tout ça, mais les requêtes se traitent dans d'auters fichiers :
