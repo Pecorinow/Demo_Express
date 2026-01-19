@@ -1,3 +1,6 @@
+```js
+// ! Version de quand on utilisait le fakeTaskService
+
 //* On arrive ici depuis le fichier index.js.
 
 // Importer le task.controller :
@@ -14,16 +17,16 @@ const taskRouter = require('express').Router();
 // Autre manière d'écrire les routes :
 taskRouter.route('/')
     .get(taskController.getAll)
-    .post(taskController.insert)
+    .post(nameValidatorMiddleware(), taskController.insert)
         // middleware créé dans nameValidator.middleware.js !
     
 taskRouter.route('/:id') // On met un idValidtaorMiddleware sur tout ce qui nécessite un id :
-    .get(taskController.getbyId)
-    .put(taskController.update) //
-    .delete(taskController.delete)
-    .patch(taskController.updatedStatus)
+    .get(idValidatorMiddleware(), taskController.getbyId)
+    .put(idValidatorMiddleware(), nameValidatorMiddleware(), taskController.update) //
+    .delete(idValidatorMiddleware(), taskController.delete)
+    .patch(idValidatorMiddleware(),nameValidatorMiddleware(), taskController.updatedStatus)
 
-taskRouter.get('/user/:id', taskController.getByUser)
+taskRouter.get('/user/:name', taskController.getByUser)
 
 //* Rendre le routeur exportable dans d'auters fichiers :
 module.exports = taskRouter;

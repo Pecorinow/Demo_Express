@@ -455,16 +455,163 @@ Pour connecter notre API à une base de données, nous allons utiliser un ORM (O
 ### Mongoose (MongoDB - NoSQL)
 [Mongoose](https://mongoosejs.com/) est l'ODM prévu pour travailler avec MongoDB.
 
-## Installe Mongoose :
+## Installer Mongoose :
 ```
 npm i mongoose
 ```
 Et bim c'est installé.
 
 Dans le fichier app.js :
-Installer la connection avant les routes, donc avant le point 2) !!
+Installer la connection avant les routes, donc avant le point 2 !!
 
-[...incoming...] 
+```js
+// On va créer un middleware qui établit une connexion à chaque requête.
+// -> Utiliser les app-lvl middlewares :
+// Pour établir la connexion, on a besoin d'abord d'importer mongoose :
+const mongoose = require('mongoose');
+server.use( async(req, res, next) => {
+    // À partir de l'objet mongoose importé plus haut, on peut créer une connection :
+    mongoose.connect('url')
+    // => si on passe la souris sur connect : -> Promise :
+    // Vu que la connection peut échouer, la méthode de connexion nous renvoie une promesse
+    // => Soit utiliser un try/catch (version bof), soit un Async/await, avec un try/catch (plus propre) :
+    try {
+        // Essayons de se connecter :
+        await mongoose.connect('pouet');
+        // + Ajouter un async dans la connexion au serveur plus haut (server.use(async(...))).
+        console.log("Successfully connected to the DB !");
+        
+        next();// Si la req fonctionne, on permet à la requête de continuer sa route.
+
+    } // Et si ça ne marche pas :
+    catch(err) {
+        console.log(`Connection Failed \n[Reason]\n ${err}`) // les \n = passage à la ligne du message.
+        res.status(500).json( {statusCode : 500, message : "Oupsi, impossible de se connecter à la DB 🙂‍↔️ "})
+    }
+})
+```
+Ici, avec l'url 'pouet', on reçoit un message d'erreur, car pouet n'est pas correct.
+
+
+On a besoin, dans la méthode connect, de mettre l'url permettant de se connecter au serveur mongo (notre Cluster)
+[IMPORTANT] Par sécurité, on ne met JAMAIS écrire notre url dans le fichier app.js, sinon nos données de connexion se retrouvent en free access sur git.
+=> On va donc utiliser notre fichier de variables d'environnement, .env !
+
+Dans le fichier .env, on ajoute une DB_CONNEXION :
+```js
+PORT=3000
+DB_CONNEXION=''
+```
+Ensuite, on retourne sur notre page MongoDB -> Clusters -> Connect -> Choose your application : Drivers -> Copier le long machin qui commence par mongodb+srv -> Le coller dans .env, et remplacer le <password> par notre mot de passe.
+
+Importer cette variable d'environnement en-dessous de celle de PORT :
+```js
+//? Récupération des variables d'environnement :
+const {PORT} = process.env;
+    // = J'extraie ce qui m'intérese (ici PORT, le port surlequel on va lancer le serveur) hors de process.env
+const {DB_CONNEXION} = process.env;
+```
+
+...Et la coller plus bas , à la place de 'pouet' :
+```js
+// Essayons de nous connecter :
+        await mongoose.connect(DB_CONNEXION, { dbName : 'TaskManager' });
+```
+
+### Créer les modèles de données de notre DB :
+On va créer un dossier appelé Models, dans lequel on crée un fichier truc.model.js pour chaque ressource de notre DB (task.model, category.model,...). => Permettra d'indiquer ce qui est attendu dans notre DB (à quoi ressemble une task, un user...), grâce à des _Schema_ :
+
+_Exemple avec category.model.js_ :
+```js
+const { Schema } = require('mongoose'); // Importer Mongoose pour créer des Schemas.
+
+// Créer un nouveau schema pour décrire à quoi ressemble une category :
+const categorySchema = new Schema(/**/); // -> sert à décrire le schema
+
+// Créer un model à partir de ce schema :
+    // Premier paramètre : le nom du model  (ici, Category)
+    // Deuxième paramètre : le schéma de ce model (ici, categorySchema)
+const Category = model('Category', categorySchema);
+
+// Ensuite on exporte le model :
+module.exports = Category;
+```
+Ensuite, on remplit new Schema() avec deux objets :
+1. Les différents objets qui composent Category (name, icon)
+2. Ainsi que les options de collection () : infos sur la colllection
+```js
+// Créer un nouveau schema pour décrire à quoi ressemble une category :
+const categorySchema = new Schema(
+    { // 1. Description de ce qui compose la collection :
+    name : {
+        type : String,
+        required : true, // obligatoire
+        unique : true, // pas deux fois le même nom
+        trim : true, // gère les espace inutiles s'il y en a
+    },
+    icon : {
+        type : String,
+        required : true,
+        unique : true,
+    }
+},  { // 2. Options de collection :
+    collection : 'Category',// Mettre le nom de la collection avec laquelle on drvra intéragir en DB
+    timestamps : true
+    // Pour ajouter 2 champs automatiquement :
+    // createAt : date -> date de création de la catégorie
+    // updateAt : date -> date de dernière modification
+}
+
+); // -> sert à décrire le schema
+```
+Voir le task.model et le user.model pour les petites subtilités de ces fichiers.
+
+
+Maintenant qu'on a créé une vraie DB avec Mongoose et nos models, on veut importer de VRAIS services dans nos **controllers** =>
+- créer les fichiers vraiService dans le dossier services -> mongo,
+- remplacer tous les fakeTaskService par des taskService et importer les taskService,
+- et ajouter des Async/await et des Try/catch :
+
+_Exemple avec le find de category.service.js :_
+```js
+find : async() => {
+        try {
+            // On va interroger la DB de Mongoose (ça peut prendre du temps ou planter donc c'est une promesse => await)
+            const categories = await Category.find();
+            return categories;
+        } catch(err) {
+            console.log(err);
+            throw new Error(err);
+    }
+    } //* -> Quand c'est fait, importer ce categoryService dans le categoryController, et faire le reste.
+```
+
+_Et ensuite, dans le category.controller.js :_
+```js
+    getAll : async(req, res) => {
+        try {
+            // On appelle notre service qui va chercher dans la DB :
+             const categories = await categoryService.find();
+            // Si ça marche, on envoie les catégories :
+            res.status(200).json(categories);
+        } 
+        catch(err) {
+            console.log(err);
+            res.status(500).json( { statusCode : 500, message : 'Erreur avec la DB' } );
+        }
+    },
+```
+Voir le reste du category.controller pour les petites subtilités des autres ressources (getById, insert, update...)
+
+**Attention** : dans la vraie DB de Mongoose, les id ne sont plus des nombres mais des chaines de caractères ! Donc :
+- Aller dans les routers et retirer tous les idValidator(), qui vérifiaient si l'id était bien un chiffre. Faire pareil avec nameValidator().
+- Retirer tous les + devant les req, qui transformaient automatiquement les id en nombre.
+- à la création de nouveaux objets, utiliser ces id bizarres entre "".
+
+**Remarque** : Maintenant, quand on voudra créer de nouvelles tâches, catégories ou users dans Insomnia, il faudra suivre le même schéma que dans nos models et utiliser les mêmes noms de propriété (name, categoryId, fromUserId...).
+
+
+
 
 ## Hasher des données
 

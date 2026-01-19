@@ -15,8 +15,9 @@ const server = express();
     // Création du serveur express.
 
 //? Récupération des variables d'environnement :
-const {PORT} = process.env;
+const {PORT, DB_CONNEXION} = process.env;
     // = J'extraie ce qui m'intérese (ici PORT, le port surlequel on va lancer le serveur) hors de process.env
+// const {DB_CONNEXION} = process.env;
 
 //? Pour paramètrer le fait que notre API doit comprendre que du JSON arrive :
 server.use(express.json());
@@ -34,17 +35,17 @@ server.use(logMiddleware()); // = J'utiliser le middleware importé à la ligne 
 // -> Utiliser les app-lvl middlewares :
 // Pour établir la connexion, on a besoin d'abord d'importer mongoose :
 const mongoose = require('mongoose');
+
 server.use( async(req, res, next) => {
     // À partir de l'objet mongoose importé plus haut, on peut créer une connection :
-    mongoose.connect('url')
     // => si on passe la souris sur connect : -> Promise :
     // Vu que la connection peut échouer, la méthode de connexion nous renvoie une promesse
     // => Soit utiliser un try/catch (version bof), soit un Async/await, avec un try/catch (plus propre) :
     try {
         // Essayons de se connecter :
-        await mongoose.connect('pouet');
+        await mongoose.connect(DB_CONNEXION, { dbName : 'TaskManager' });
         // + Ajouter un async dans la connexion au serveur plus haut (server.use(async(...))).
-        console.log("Successfully connected to the DB !");
+        console.log("Successfully connected to the DB ! U da best 🫶");
         
         next();// Si la req fonctionne, on permet à la requête de continuer sa route.
 

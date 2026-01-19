@@ -1,9 +1,9 @@
+```js
 // Import du type Request et Response pour la JSDoc juste en dessous (sinon, pas d'auto-complétion, pourquoi, je ne sais pas) :
 const {Request, Response} = require('express');
 
 // Import du fakeTaskService : :
-const fakeTaskService = require('../services/fake/fakeTask.service');
-const taskService = require('../services/mongo/task.service');
+const fakeTaskService = require('../services/fake/fakeTask.service')
 
 // Création de notre taskController :
 const taskController = {
@@ -15,23 +15,26 @@ const taskController = {
      * @param {Request} req 
      * @param {Response} res 
      */
-    getAll : async(req, res) => {
-        try {
-            // On appelle notre service qui va chercher dans la DB :
-            const tasks = await taskService.find();
-            const length = tasks.length;
-            const dataToSend ={
-                tasks,
-                length
-            }
+    getAll : (req, res) => {
+        const tasks = fakeTaskService.find();
 
-            // Si ça marche, oin envoie les tâches :
-            res.status(200).json(dataToSend);
-        } // Si ça ne marche pas :
-        catch(err) {
-            console.log(err);
-            res.status(500).json( { statusCode : 500, message : 'Erreur avec la DB 🫠'} );
-        }
+        //* Version 1 : quand on a peu de connées à renvoyer :
+        // Renvoyer le tableau tel quel avec toutes les tâches :
+        // res.status(200).json(tasks)
+            // = res.send(tasks, 200)
+            // = renvoie un statut 200, et va chercher le tableau des tâches en fakeDB et le renvoie en json.
+
+        //* Version 2 : quand on a bcp de données à renvoyer :
+        // Renvoyer un objet avec le nombre total des tâches + le tableau :
+        const dataToSend = {
+            count : tasks.length,
+            tasks
+                // = tasks : tasks
+                // Quand on a le même nom en propriété et en valeur, on peut juste écrire le nom tout seul.
+        };
+        res.status(200).json(dataToSend);
+
+
     },
 
     /**
@@ -39,24 +42,26 @@ const taskController = {
      * @param {Request} req 
      * @param {Response} res 
      */
-    getbyId : async(req, res) => {
-        const id = req.params.id;
-        
-        try {
-            const task = await taskService.findById(id);
+    getbyId : (req, res) => {
+        // Les paramètres récupérés seront toujour sous forme de chaine de caractères. Si on veut que notre id soit un nombre (pour pouvoir faire un ===), il faut faire un parse (soit avec parsInt, soit avec +) :
+        const id = +req.params.id;
+        // = 1) On va chercher l'id dans les paramètres de la request (pcq il ne se trouve pas ailleurs)
+        // Voir 2) dans le fakeTaskService
 
-            // Si task est undefined ou null = si l'id recherché n'existe pas :
-            if (!task) {
-                res.status(404).json( { statusCode : 404, message : "Tâche non-trouvée." } )
-            } // Sinon, renvoyer la tâche :
-            else {
-                res.status(200).json(task);
-            }
-        } // Et si la DB plante :
-        catch(err) {
-            console.log(err);
-            res.status(500).json( { statusCode : 500, message : 'Erreur avec la DB 🫠' } );
+        const task = fakeTaskService.findById(id);
+        // = 3) On crée la variable task, qui correspond à la task cherchée par la fonction finsById => task = la valeur renvoyée par le return du taskService !
+
+        // 4) Si l'id n'existe pas = si pas de tâche correspondante...
+        if(!task) {
+            res.status(404).json( {
+                statusCode : 404,
+                message : "Tâche non trouvée"})
+                // = ...alors on renvoie un status 404 et un message json.
         }
+
+        // ...Sinon, si la tâche existe :
+        res.status(200).json(task); 
+ 
     },
 
     /**
@@ -64,36 +69,40 @@ const taskController = {
      * @param {Request} req 
      * @param {Response} res 
      */
-    getByUser : async(req, res) => {
+    getByUser : (req, res) => {
         // ! finir la fonctionnalité du getByUser. Il vous faudra, dans le service, une fonction qui recherche toutes les tâches de l’utilisateur. 
-        const userId = req.params.id;
+        const userName = req.params.name;
+        //* ATTENTION : le "name" est écrit comme ça d'après ce qu'on a écrit dans le taskRouter : '/user/:name', pas d'après le "to" de la DB !!
+
+        //Version 1 :
+        // tasksOfUser = fakeTaskService.findToUser(userName);
+
+        // const tasksToSend = {
+        //     userName : userName,
+        //     tasks : tasksOfUser
+        // }
+
+        // if(tasksOfUser) {
+            // res.status(200).json(tasksToSend);
+        // } else {
+        // res.status(404).json( {
+        //     statusCode : 404,
+        //     message : "Aucune tâche ne correspond à cet utilisateur."});
+        // }
 
         //Version 2 : le pimp 🌟
-        // TODO On souhaite afficher les tâches attribuées à l'utilisateur ET les tâches que lui-même a assignées :
-        try {
-            if(!userId) { // Si le user n'existe pas :
-                res.status(404).json( { statusCode : 404, message : "Cet utilisateur n'existe pas 🫥" } )
-            }
-            // else if(!giverUser) {
-            //     res.status(404).json( { statusCode : 404, message : "Aucune tâche n'est attribuée à cet utilisateur 🫥" } )
-            // } else if(!receiverUser) {
-            //     res.status(404).json( { statusCode : 404, message : "Aucune tâche n'est attribuée à cet utilisateur 🫥" } )
-            // }
-            else {
-                const tasksAssignedToUser = await taskService.findToUser(userId);
-                const tasksAssignedByUser = await taskService.findFromUser(userId);
+        // TODO On souhaite afficher les tâches attribuées à l'utilisateur ET les tâches que lui a assignées :
+        const tasksToDo = fakeTaskService.findToUser(userName);
 
-                const dataToSend = {
-                    tasksAssignedToUser,
-                    tasksAssignedByUser
-                }
-                res.status(200).json(dataToSend);
-            }
+        const tasksGiven = fakeTaskService.findFromUser(userName);
+
+        const dataToSend = {
+            tasksToDo,
+            tasksGiven
         }
-        catch (err) {
-            console.log(err);
-            res.status(500).json( { statusCode : 500, message : 'Erreur avec la DB 🫠' } );
-        }
+
+        res.status(200).json(dataToSend);
+
     },
 
     /**
@@ -101,20 +110,20 @@ const taskController = {
      * @param {Request} req 
      * @param {Response} res 
      */
-    insert : async(req, res) => {
-        
+    insert : (req, res) => {
+        //* Opérations AVANT d'être passé par fakeTaskService :
         const taskToAdd = req.body;
             // = On crée une variable taskToAdd qui correspond au body de la request.
 
-       try {
-            const insertedTask = await taskService.create(taskToAdd);
-
-            res.location(`/api/tasks/${insertedTask.id}`);
-            res.status(201).json(insertedTask);
-       }
-       catch(err) {
-            res.sendStatus(500);
-       }
+        const addedTask = fakeTaskService.create(taskToAdd);
+            // = on crée une nouvelle variable pour la tâche ajoutée, addedTask, qui va être ajoutée ajoutée à la DB via la fonction create(taskToAdd)
+            // Cette fonction va remanier taskToAdd, lui donner un id, et la renvoyer à taskController pour créer addedTask.
+        
+        //* Opérations APRÈS être passé par fakeTaskService
+        // Pour respecter les principes REST, on doit ajouter à la réponse une url qui permet de consulter la valeur ajoutée :
+        res.location(`/api/tasks/${addedTask.id}`);
+            // Au lieu d'écrire juste /api/tasks/id, on demande l'id de la valeur qui vient d'être créée, addedTask, et à laquelle l'API a attribué un id (on demande l'id de addedTask, pcq taskToAdd n'a pas d'id)
+        res.status(201).json(addedTask)
     },
 
     /**
