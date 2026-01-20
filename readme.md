@@ -521,6 +521,54 @@ const {DB_CONNEXION} = process.env;
 ### Créer les modèles de données de notre DB :
 On va créer un dossier appelé Models, dans lequel on crée un fichier truc.model.js pour chaque ressource de notre DB (task.model, category.model,...). => Permettra d'indiquer ce qui est attendu dans notre DB (à quoi ressemble une task, un user...), grâce à des _Schema_ :
 
+Pour créer un model, on créé un fichier _nomRessource.model.js_ :
+```js
+const { Schema, model } = require('mongoose');
+
+// On créé un schema qui va décrire à quoi ressemble une categorie
+// Schema( { description objet }, { options collection } )
+const nomRessourceSchema = new Schema({}, {});
+
+// On va créer un model à partir de ce schema
+// Le premier paramètre et le nom du model, le deuxième, le schéma de ce model
+const NomRessource = model('NomRessource', nomRessourceSchema);
+
+// On exporet le model créé
+module.exports = NomRessource;
+```
+
+
+Dans le schema :
+
+dans le premier objet, on dessine à quoi ressemble la ressource
+```js
+
+{
+    nomAttribut1 : {
+        type : String,
+        required : true, /*obligatoire */
+        unique : true, /*unique */
+        trim : true /* pour enlever les espaces inutiles s'il y en a */
+    },
+    nomAttribut2 : {
+        type : Boolean,
+        required : true,
+    },
+    /* ... */
+}
+```
+
+dans le deuxième objet, on fourni les informations sur la collection
+```js
+{ 
+    /* Nom de la collection dans Mongo */
+    collection : 'NomCollection',
+    /* Pour rajouter la date de création et dernière modif de la ressource */
+    timestamp : true,
+    /* ... */
+}
+```
+
 _Exemple avec category.model.js_ :
 ```js
 const { Schema } = require('mongoose'); // Importer Mongoose pour créer des Schemas.
@@ -611,10 +659,162 @@ Voir le reste du category.controller pour les petites subtilités des autres res
 **Remarque** : Maintenant, quand on voudra créer de nouvelles tâches, catégories ou users dans Insomnia, il faudra suivre le même schéma que dans nos models et utiliser les mêmes noms de propriété (name, categoryId, fromUserId...).
 
 
+### Utiliser ces modèles dans nos services :
+```js
+const ressourceCree = nomModel(valeursAAjouter);
+// Créer un objet en respectant le schema du model
 
+ressourceCree.save(); // sauvegarde cet objet en DB
+```
+
+Maintenant que les modèles sont faits, nous avons accès à plusieurs méthodes pour effectuer des actions dans la DB :
+```js
+
+nomModel.find(); /* permet de trouver tous les éléments correspondant au model */
+
+nomModel.find( { /*ici, filtre*/ } ); /* permet de trouver tous les éléments correspondant au filtre */
+
+nomModel.findById(id); /* permet de trouver l'élément dont l'id est celui renseigné */
+
+nomModel.findByOne( { /* ici, filtre */ } ); /* permet de trouver le premier élément dont qui correspond à notre filtre */
+
+const ressourceCree = nomModel(valeursAAjouter); /* Créé un objet en respectant le schéma du model */
+ressourceCree.save(); /* Sauvegarde cet objet en db */
+
+nomModel.deleteOne({ /* filtre */ });// Supprime le premier élément qui correspond au filtre et renvoie un objet avec une propriété deletedCount qui contient le nombre d'élément supprimés
+
+nomModel.findByIdAndDelete(id); //Trouve l'élément grâce à l'id et le supprime. Renvoie l'élément trouvé ou null si pas trouvé
+
+nomModel.deleteMany({ /* filtre */ });//Supprime tous les élements qui correspondent au filtre et renvoie un objet avec la prop deletedCount.
+```
 
 ## Hasher des données
+Pour gérer les utilisateurs, on crée souvent la partie création de compte et connexion dans une partie nommée "Auth". Nous allons  donc créer une route Auth, un authController et un authService.
 
-<hr>
+Pour hasher, nous avons besoin d'une libreirie de hashage. Nous allons utiliser [Argon2]https://www.npmjs.com/package//argon2, mais il existe aussi Bicrypt et d'autres.
 
-## 
+### Installer Argon2 :
+Dans le terminal du projet :
+```
+npm i argon2
+```
+### 
+
+
+
+## Rajouter l'authentification avec JWT
+
+### Installer Json Web Token :
+Installer la librairie Jsonwebtoken :
+```
+npm i jsonwebtoken
+```
+
+Ensuite, on crée un dossier Utils avec un fichier _jwt.utils.js_, où :
+1) On crée un token dans generate()
+2) On le décode dans decode()
+
+**Token** = "jeton" d'autorisation, qui permet de savoir qui fait une requête et lui donner, ou non, l'autorisation de faire cette requête.
+Exemples :
+- Pour pouvoir modifier la page insta de Bob, il faut avoir les accès de Bob (email et password).
+- Sur Youtube, les shorts qui sont envoyés de manière "alléatoire" sont en fait envoyés sur base de notre token, qui contient nos infos de conexion, qui elles-mêmes sont liées à notre historique et aux trucs qu'on regarde.
+- Sur Twitch, si on est modérateur, on a des options et boutons en plus par rapports aux paysans randoms.
+
+
+>REMARQUE :
+>Promise VS try/catch :
+> - try/catch = Gérer le code synchrone, les erreurs immédiates.
+> - Promise = Gérer le code asynchrone, les tâches qui prennent du temps(téléchargement, appel serveur, etc.).
+>
+> On peut gérer les deux en même temps avec un async/await dans un try/catch :
+```js
+async function commande() {
+  try {
+    const pizza = await commandePizza;
+    console.log(pizza);
+  } catch (error) {
+    console.log("Erreur :", error);
+  }
+}
+```
+
+Ensuite, dans .env, aller stocker nos variables d'environnement 'audience', 'issuer' et 'secret' :
+
+```js
+PORT=3000
+DB_CONNEXION= "mongodb+srv://Caro:Pecorinow1!@walterlecluster.slnxt2a.mongodb.net/?appName=WalterLeCluster";
+JWT_ISSUER = "";
+JWT_AUDIENCE = "";
+JWT_SECRET = "";
+```
+Pour le secret, aller sur LatPass et générer un code => le mettre dans .env.
+Ce **secret** = code secret qui va servir à signer (ou encoder) et à décoder le jeton.
+ATTENTION : ce code ne doit JAMAIS finir ur Git !!
+
+Ensuie, on importe le jwtUtils dans la fonction login du _auth.controller.js_ :
+```js
+else {
+                // On va lui générer un token :
+               const token = await jwtUtils.generate(userFound);
+
+                // On renvoie quelques infos de l'utilisateur  le token :
+                res.status(200).json({
+                    id : userFound._id,
+                    firstname : userFound.firstname,
+                    lastname : userFound.lastname,
+                    token : token// ou juste token
+                })
+            }
+```
+### Envoyer le token avec la requete :
+Un token, ou jeton, s'envoie en l'ajoutant dans les Headers de la requête (sur Insomnia). Quand on sera en React, on ajouter anous-même aux headers de la requ ce fameux jeton qu'on aura stocké au préalable dans le navigateur.
+Sur Insomnia, il y a un bouton tout prêt.
+
+Sur Insomnia, copier le token d'un user. Depuis Tasks/insert, aller sur Auth -> Inherit from parent : Bearer Token (car jwt est un Bearer Token).
+-> À côté Token, coller le token.
+Le header dans lequel on aura ajouté ce token s'appelle "Authorization".
+
+
+### Création de middlewares pour récup le token :
+On va créer un middleware pour chaque vérification qu'on veut faire.
+Par exemple :
+**authentication** : on crée un _authentication.middleware.js_, qui va se charger de vérifier si le token est envoyé, donc si l'utilisateur est bien connécté.
+**userAuthorization** : Vérifier si dans le token, l'id de l'utilisateur lui permet de faire ce qu'il demande.
+**roleAuthorization** : Vérifie si l'utilisateur possède le bon rôle pour effectuer sa requête.
+
+_Ex : Création d'un authenticationMiddleware :_ 
+```js
+const authenticationMiddleware = () => {
+    return (req, res, next) => {
+        
+    }
+}
+
+module.exports = authenticationMiddleware;
+```
+
+On va ensuite activer ces différents middlewares sur les routes qui en ont besoin :
+_Dans task.router.js :_
+```js
+// Midleware pour le token :
+const authenticationMiddleware = require('../middlewares/authentication.middleware');
+```
+
+### Déchiffrer le token :
+Dans jwt.utils.js :
+Pour décoder un token, on utilise la méthode verify() :
+```js
+jwt.verify(token, JWT_SECRET, options, (error, playload) => {
+               
+                if(error) {
+                    reject(error); /* Si erreur, on rejette la promesse*/
+                }
+
+                resolve(playload);/* Si pas d'erreur, on résoud la promesse et on renvoie le token*/
+            })
+```
+
+### Utilisation : Créer des middlewares.
+
+
+## Gestion des données

@@ -22,7 +22,9 @@
   },
   "homepage": "https://github.com/Pecorinow/Demo_Express#readme",
   "dependencies": {
+    "argon2": "^0.44.0",
     "express": "^5.2.1",
+    "jsonwebtoken": "^9.0.3",
     "mongoose": "^9.1.3"
   }
 }

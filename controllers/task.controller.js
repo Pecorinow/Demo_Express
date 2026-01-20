@@ -74,11 +74,6 @@ const taskController = {
             if(!userId) { // Si le user n'existe pas :
                 res.status(404).json( { statusCode : 404, message : "Cet utilisateur n'existe pas 🫥" } )
             }
-            // else if(!giverUser) {
-            //     res.status(404).json( { statusCode : 404, message : "Aucune tâche n'est attribuée à cet utilisateur 🫥" } )
-            // } else if(!receiverUser) {
-            //     res.status(404).json( { statusCode : 404, message : "Aucune tâche n'est attribuée à cet utilisateur 🫥" } )
-            // }
             else {
                 const tasksAssignedToUser = await taskService.findToUser(userId);
                 const tasksAssignedByUser = await taskService.findFromUser(userId);
@@ -174,20 +169,18 @@ const taskController = {
      * @param {Request} req 
      * @param {Response} res 
      */
-    delete : (req, res) => {
-        //! finir la fonctionnalité delete. Faire une fonction dans le service qui reçoit l’id de la tâche à supprimer. Dans un premier temps, vérifier si la tâche existe, si pas, renvoyez false. Si elle existe, la supprimer du tableau (tips : filter ) et renvoyer true. Votre controleur, quand il utilisera la méthode du service, obtiendra un booléen pour savoir si oui ou non, la tâche a été supprimée.
+    delete : async(req, res) => {
+        try {
+            const id = req.params.id;
+            if(await taskService.delete(id)) {
+                res.sendStatus(204);
+            } else {
+                res.sendStatus(204).json( {statusCode : 404, message : 'Cette tâche \'a pas été trouvée'})
+            }
 
-        const id = +req.params.id;
-
-        // Si la fonction delete(id) renvoie true :
-        if(fakeTaskService.delete(id)) {
-            res.sendStatus(204);
-            //* Attention : si on n'a qu'un statut à envoyer, on fait sendStatus et pas status tout seul, car sans send le serveur attend toujours l'envoi d'autres infos et ne met pas fin à la request.
-        } else { //TODO faire un else ici mais pourquoi??
-        // Sinon, si elle renvoie false :
-        res.status(404).json( {statusCode : 404, message : "Suppression impossible, la tâche n'existe pas"})
+        } catch(err) {
+            res.sendStatus(500);
         }
-
     }
 
 }

@@ -5,7 +5,7 @@
 // Imports : souvent écrits EN HAUT de la page :
 const taskRouter = require('./task.router'); 
 const categoryRouter = require('./category.router');
-// const userRouter = require('./user.router');
+const authRouter = require('./auth.router');
 
 // ! 1) Créer un objet "routeur" (router) 
 const router = require('express').Router();
@@ -26,7 +26,7 @@ router.use('/tasks', taskRouter);
 router.use('/categories', categoryRouter);
     // = Si l'url se termine par categories, alors on dispatche sur le categoryRouter. (-> Voir la suite sur category.router.js)
 
-// router.use('/utilisateurs', userRouter);
+router.use('/auth', authRouter);
 
 //! 3) Rendre l'objet router exportable :
 module.exports = router;

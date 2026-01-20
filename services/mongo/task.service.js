@@ -26,8 +26,26 @@ const taskService = {
 
     find : async() => {
         try {
-            const tasks = await Task.find();
-            return tasks
+            // Populate : permet de rajouter les infos reliées à notre objet task grâce aux ref qu'on a établi dans le Schema :
+            const tasks = await Task.find()
+                                    .populate( { 
+                                        path : 'cayegoryId',
+                                        select : { id : 1, name : 1, icon : 1}
+                                    } )
+                                    // = rajoute les infos du model Category, en sélectionnant les infos id, name et icon.
+                                    // 1 = TRUE = on veut ces infos-là (1 != un number dans ce cas).
+                                    .populate( {
+                                        path : 'fromUserId',
+                                        select : {id : 1,firstname : 1,lastname : 1 }
+                                    })
+                                    .populate( {
+                                        path : 'toUserId',
+                                        select : {id : 1,firstname : 1,lastname : 1 }
+                                    });
+            // ATTENTION : On est en NO-SQL => pas de lien concret entre les éléments, ici on pourrait ajouter des éléments qui n'existent pas dans Category ou User, ça nous renverrait juste les infos existantes en ignorant celles qui n'existent pas.
+            // Contrairement au SQL où il y a un lien tangible entre les éléments.
+                                    
+            return tasks;
         }
         catch(err) {
             console.log(err);
@@ -37,7 +55,22 @@ const taskService = {
 
     findById : async(id) => {
         try {
-            const searchedTask = await Task.findById(id);
+
+            const searchedTask = await Task.findById(id)
+                                // Aussi ok .findOne { id : ...};
+                                .populate( {
+                                    path : 'categoryId',
+                                    select : { id : 1, name : 1, icon : 1 }
+                                })
+                                .populate( {
+                                    path : 'fromUserId',
+                                    select : {id : 1,firstname : 1,lastname : 1 }
+                                })
+                                .populate( {
+                                    path : 'fromUserId',
+                                        select : {id : 1,firstname : 1,lastname : 1 }
+                                });
+                                            
             return searchedTask;
         }
         catch(err) {
@@ -88,6 +121,38 @@ const taskService = {
             throw new Error(err);
         }
     },  //* -> Quand c'est fait, importer ce taskService dans le taskController, et faire le reste.
+
+    delete : async(id) => {
+
+        try {
+            // 2 solutions :
+            // 1) deleteOne({}) avec un filtre qui renvoie un objet avec une propriété deleteCount, dans laquelle il y a le nombre d'éléments qui ONT ÉTÉ supprimés (ici, 1 pcq One, ou 0 si l'id n'a pas été trouvé).
+            // => Renvoie un Booléen 0 ou 1.
+            // const deleteInfo = await Task.deleteOne( {_id : id} );
+            // le _ vient de la façon dont l'id a été écrit par défaut dans la DB Mongo.
+
+            // if(deleteInfo.deletedCount === 0) {
+            //     return false
+            // } else {
+            //     return true;
+            // }; // peut aussi s'écrire :
+                // return deleteInfo.deleteCount !== 0;
+
+            //2) findByIdAndDelete(id) : Va d'abord faire la méthode findById pour trouver l'élément à supprimer => Renvoie alors l'élément (ou pas, si pas trouvé) qui VA être supprimé :
+            const deletedTask = await Task.findByIdAndDelete(id);
+
+            if(deletedTask) {
+                return true
+            } else {
+                return false
+            }
+
+        } catch(err) {
+            console.log(err);
+            throw new Error(err);
+        }
+        
+    }
 }
 
 module.exports = taskService;

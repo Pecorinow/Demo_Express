@@ -1,7 +1,7 @@
 const { Schema, model, Types } = require('mongoose'); // Importer Mongoose pour créer des Schemas, des models, des Types.
 const Category = require('./category.model'); // Nécessaire pour importer le categoryId
 const User = require('./user.model');
-
+ 
 
 //* 1) Créer un nouveau schema pour décrire à quoi ressemble une task :
 const taskSchema = new Schema(
@@ -9,7 +9,6 @@ const taskSchema = new Schema(
         name : {
             type : String,
             required : true, // obligatoire
-            unique : true, // pas deux fois le même nom
             trim : true, // gère les espace inutiles s'il y en a
         },
         isDone : {
