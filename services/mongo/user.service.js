@@ -6,7 +6,8 @@ const userService = {
     find : async() => {
         try {
             //? Récupérer ce qu'on reçu dans la query pour rajouter des filtres de recherche :
-            
+            const users = await User.find()
+                                    .select()
 
 
             const users = await User.find()
