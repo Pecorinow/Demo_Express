@@ -1,8 +1,8 @@
 // Import du type Request et Response pour la JSDoc juste en dessous (sinon, pas d'auto-complétion, pourquoi, je ne sais pas) :
 const {Request, Response} = require('express');
 
-// Import du fakeTaskService : :
-const fakeTaskService = require('../services/fake/fakeTask.service');
+// Import du taskService : :
+//const fakeTaskService = require('../services/fake/fakeTask.service');
 const taskService = require('../services/mongo/task.service');
 
 // Création de notre taskController :
@@ -16,16 +16,21 @@ const taskController = {
      * @param {Response} res 
      */
     getAll : async(req, res) => {
+        // Pour faire des requêtes selon des query :
+        const query = req.query;
+        console.log(query); // query, même s'il n'y en a pas, sera toujours un objet vide.
+
         try {
             // On appelle notre service qui va chercher dans la DB :
-            const tasks = await taskService.find();
+            const tasks = await taskService.find(query);
+                // Si query trouvée, elle sera envoyée dans le find() du taskService, si pas de query trouvée, c'est un objet vide qui sera envoyé dans le find().
             const length = tasks.length;
             const dataToSend ={
                 tasks,
                 length
             }
 
-            // Si ça marche, oin envoie les tâches :
+            // Si ça marche, on envoie les tâches :
             res.status(200).json(dataToSend);
         } // Si ça ne marche pas :
         catch(err) {

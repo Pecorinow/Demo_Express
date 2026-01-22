@@ -25,7 +25,7 @@ taskRouter.route('/')
     
 taskRouter.route('/:id')
     .get(taskController.getbyId)
-    .put(taskController.update) //
+    .put(taskController.update)
     .delete(taskController.delete)
     .patch(taskController.updatedStatus)
 

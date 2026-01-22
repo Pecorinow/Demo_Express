@@ -5,9 +5,12 @@ const categoryController = require('../controllers/category.controller.js');
 
 const categoryRouter = require('express').Router();
 
-const idValidatorMiddleware = require('../middlewares/idValidator.middleware');
+// import du middleware pour indiquer que le token est obligatoire :
+const authenticationMiddleware = require('../middlewares/auth/authentication.middleware');
+// import du middleware pour bloquer des routes à certains rôles :
+const roleAuthorizationMiddleware = require('../middlewares/auth/roleAuthorization.middleware.js');
 
-const nameValidatorMiddleware = require('../middlewares/nameValidator.middleware');
+
 
 categoryRouter.get('/',categoryController.getAll)
 // categoryRouter.get('/', (req, res) => {
@@ -20,26 +23,19 @@ categoryRouter.get('/:id', categoryController.getbyId)
 //     res.send(`Voici la catégorie numéro ${req.params.id}`, 200)
 // })
 
-categoryRouter.post('/', categoryController.insert)
-// categoryRouter.post('/', (req, res) => {
-//     const categoryToInsert = req.body;
-//     res.send(categoryToInsert, 201);
-//     console.log(categoryToInsert);
+categoryRouter.post('/',
+    authenticationMiddleware(), 
+    roleAuthorizationMiddleware(['Admin']), // Ici, insérer le tableau des rôles qui sont acceptés pour cette route-là.
+    categoryController.insert)
 
-// })
+categoryRouter.put('/:id',
+    authenticationMiddleware(), 
+    roleAuthorizationMiddleware(['Admin']),
+    categoryController.update)
 
-categoryRouter.put('/:id',categoryController.update)
-// categoryRouter.put('/:id', (req, res) =>{
-//     const categoryId = req.params.id;
-//     const categoryUpdated = req.body;
-//     categoryUpdated.id = categoryId;
-
-//     res.send(categoryUpdated, 200);
-// })
-
-categoryRouter.delete('/:id', categoryController.delete)
-// categoryRouter.delete('/:id', (req, res) => {
-//     res.sendStatus(204);
-// })
+categoryRouter.delete('/:id',
+    authenticationMiddleware(), 
+    roleAuthorizationMiddleware(['Admin']),
+    categoryController.delete)
 
 module.exports = categoryRouter;

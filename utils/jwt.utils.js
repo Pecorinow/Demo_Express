@@ -42,7 +42,7 @@ const jwtUtils = {
             // - playload (les infos stockées dan sle token, pour savoir qui est le user)
             // - un secret : LE code secret qui va servir à signer (ou encoder) et à décoder le jeton. Il ne doit JAMAIS être divulgué ni être mis sur Git, sinon n'importe qui peut le décoder.
             // - les options : la façon dont va être encodé le token.
-            // - Attention, la méthode sign ne renvoie pas d eprommess, mais peut échouer quand-même => le dernier paramètre de la méthode sign est la fonction exécutée à la fin de la création du token.
+            // - Attention, la méthode sign ne renvoie pas de prommess, mais peut échouer quand-même => le dernier paramètre de la méthode sign est la fonction exécutée à la fin de la création du token.
             jwt.sign(playload, JWT_SECRET, options, (error, token) => {
                 // Si il y a eu erreur lors de la signature, le param 'error' sera rempli et 'token' sera vide :
                 if(error) {

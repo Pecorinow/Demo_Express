@@ -1,4 +1,5 @@
-// Pour les tâches :  
+//* Exercice :
+//Pour les tâches :  
 
 // Créer un nouveau service dans le dossier mongo avec toutes les mêmes méthodes que dans le fakeTaskService. 
  
@@ -24,12 +25,45 @@ const Task = require('../../models/task.model');
 
 const taskService = {
 
-    find : async() => {
+    find : async(query) => {
         try {
+            //? Récupérer ce qu'on reçu dans la query pour rajouter des filtres de recherche :
+            const {isDone} = query;
+            //* Vérifier si isDone est bien présent dans la query pour créer un nouveau filtre :
+            let isDoneFilter; // Valeur sera modifiée dans le if et le else => let
+            if(isDone === undefined) { // Si isDone est undefined...
+                isDoneFilter = {}; // ...alors le filtre est vide.
+
+            // Si isDone est rempli :
+            } else {
+                // Filtre pour le find : {nomChampsEnDB : nomVariableContenantValeurRecherchee}
+                isDoneFilter = {isDone : isDone}
+            } // => Aller le rajouter dans le find() juste en dessous ! ⬇️
+
+            //* Vérifier s'il y a des catégories dans la query :
+            let categoryFilter;
+            // Si pas de categoryId dans la query => filtre vide :
+            if(!categoryFilter ){
+                categoryFilter = {};
+            }
+            // Sinon, comme on pourrait rechercher plusieurs catégories, on va regarder si c'est un tableau :
+            else if(Array.isArray(categoryId)) {
+                categoryFilter = {categoryId : {$in : categoryId} }
+                    // { nomChampsDB : { $in : valeursRecherchées } }
+                    // = Parmi les noms de champs en DB, trouve ceux dont la valeur est dans la query
+            }
+
+            // Si pas de tableau, on cherche une seule catégorie :
+            else {
+                categoryFilter = {categoryId : categoryId};
+            }
+
+
             // Populate : permet de rajouter les infos reliées à notre objet task grâce aux ref qu'on a établi dans le Schema :
-            const tasks = await Task.find()
+            const tasks = await Task.find(isDoneFilter)
+                                    .and(categoryFilter)
                                     .populate( { 
-                                        path : 'cayegoryId',
+                                        path : 'categoryId',
                                         select : { id : 1, name : 1, icon : 1}
                                     } )
                                     // = rajoute les infos du model Category, en sélectionnant les infos id, name et icon.

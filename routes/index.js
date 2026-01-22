@@ -6,6 +6,7 @@
 const taskRouter = require('./task.router'); 
 const categoryRouter = require('./category.router');
 const authRouter = require('./auth.router');
+const userRouter = require('./user.router');
 
 // ! 1) Créer un objet "routeur" (router) 
 const router = require('express').Router();
@@ -19,7 +20,7 @@ router.get('/', (req, res) => {
     //* On arrive ici après l'adresse /api du fichier app.js.
     // Donc ce que ce '/' dit ici c'est : "S'il n'y a rien après /api dans l'adresse http://localhost:3000/api/", alors lancer le message suivant".
 
-//*... Mais si /api est suivi de /tasks ou /category, alors :
+//*... Mais si /api est suivi de /tasks, /category,..., alors :
 router.use('/tasks', taskRouter);
     // = Si l'url se termine par tasks, alors on dispatche sur le taskRouter. (-> Voir la suite sur task.router.js)
 
@@ -27,6 +28,8 @@ router.use('/categories', categoryRouter);
     // = Si l'url se termine par categories, alors on dispatche sur le categoryRouter. (-> Voir la suite sur category.router.js)
 
 router.use('/auth', authRouter);
+
+router.use('/users', userRouter);
 
 //! 3) Rendre l'objet router exportable :
 module.exports = router;

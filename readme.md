@@ -698,18 +698,30 @@ Dans le terminal du projet :
 ```
 npm i argon2
 ```
-### 
+### Hasher le pssword :
+Dans le service, avant l'ajout de l'utilisateur dans la DB, on va faire :
+```js
+  const hashedPassword = await argon2.hash(user.password);
+```
 
+### Vérification du password :
+Pour vérifier si un mot de passe correspond à la version hashée :
+```js
+   const checkPassword = await argon2.verify(hashedPassword, loginPassword);
+   // si les deux ne correspondent pas, checkPassword sera faux
 
+```
 
 ## Rajouter l'authentification avec JWT
+[JWT - Json Web Token] est le moyen le plus connu et utilisé de créer un jeton qui permet d'identifier qui est actuellement en train de faire la requête.
+Cela permettra, sur certaines routes, de mettre en place de la sécurité et de permettre l'accès aux (à la) ressource(s) uniquement à certains utilisateurs
 
 ### Installer Json Web Token :
-Installer la librairie Jsonwebtoken :
+Installer la librairie jsonwebtoken :
 ```
 npm i jsonwebtoken
 ```
-
+### Créer un Token :
 Ensuite, on crée un dossier Utils avec un fichier _jwt.utils.js_, où :
 1) On crée un token dans generate()
 2) On le décode dans decode()
@@ -720,6 +732,18 @@ Exemples :
 - Sur Youtube, les shorts qui sont envoyés de manière "alléatoire" sont en fait envoyés sur base de notre token, qui contient nos infos de conexion, qui elles-mêmes sont liées à notre historique et aux trucs qu'on regarde.
 - Sur Twitch, si on est modérateur, on a des options et boutons en plus par rapports aux paysans randoms.
 
+Pour créer le Token :
+Dans _jwt.utils.js_, avec la librairie jsonwebtoken nous avons accès à une méthode pour créer un token :
+```js
+    jwt.sign(payload, JWT_SECRET, options, (error, token) => {});
+
+```
+Cette méthode, sign(), a plusieurs paramètres :
+
+- payload, le 1er paramètre, est un objet contenant les informations qu'on veut stocker dans le token.
+- JWT_SECRET, le 2ème paramètre, est une variable d'environnement contenant le code secret qui sert à encoder et décoder le token. (⚠️ : Pensez à bien le mettre dans vos variables d'env, il ne doit jamais être divulgué)
+- options, le 3ème paramètre, est un objet qui contient les paramètres d'encodage du token avec le type d'encodage, la date d'expiration etc
+- Un callback, le 4ème paramètre, qui est une fonction déclenchée lors de la signature du token. Cette fonction possède 2 paramètres, le premier contient une erreur s'il y en a une, le deuxième contient le token si pas d'erreur.
 
 >REMARQUE :
 >Promise VS try/catch :
@@ -738,11 +762,11 @@ async function commande() {
 }
 ```
 
-Ensuite, dans .env, aller stocker nos variables d'environnement 'audience', 'issuer' et 'secret' :
+Ensuite, dans _.env_ (et _.env.exemple_), aller stocker nos variables d'environnement 'audience', 'issuer' et 'secret' :
 
 ```js
-PORT=3000
-DB_CONNEXION= "mongodb+srv://Caro:Pecorinow1!@walterlecluster.slnxt2a.mongodb.net/?appName=WalterLeCluster";
+PORT
+DB_CONNEXION= "";
 JWT_ISSUER = "";
 JWT_AUDIENCE = "";
 JWT_SECRET = "";
@@ -750,6 +774,8 @@ JWT_SECRET = "";
 Pour le secret, aller sur LatPass et générer un code => le mettre dans .env.
 Ce **secret** = code secret qui va servir à signer (ou encoder) et à décoder le jeton.
 ATTENTION : ce code ne doit JAMAIS finir ur Git !!
+
+
 
 Ensuie, on importe le jwtUtils dans la fonction login du _auth.controller.js_ :
 ```js
@@ -766,8 +792,10 @@ else {
                 })
             }
 ```
+
+
 ### Envoyer le token avec la requete :
-Un token, ou jeton, s'envoie en l'ajoutant dans les Headers de la requête (sur Insomnia). Quand on sera en React, on ajouter anous-même aux headers de la requ ce fameux jeton qu'on aura stocké au préalable dans le navigateur.
+Un token, ou jeton, s'envoie en l'ajoutant dans les Headers de la requête (sur Insomnia). Quand on sera en React, on ajoutera nous-même aux headers de la requ ce fameux jeton qu'on aura stocké au préalable dans le navigateur.
 Sur Insomnia, il y a un bouton tout prêt.
 
 Sur Insomnia, copier le token d'un user. Depuis Tasks/insert, aller sur Auth -> Inherit from parent : Bearer Token (car jwt est un Bearer Token).
@@ -776,11 +804,11 @@ Le header dans lequel on aura ajouté ce token s'appelle "Authorization".
 
 
 ### Création de middlewares pour récup le token :
-On va créer un middleware pour chaque vérification qu'on veut faire.
+On va créer un middleware pour chaque vérification qu'on veut faire, dans un sous-dossier 'auth' du dossier 'middlewares' :
 Par exemple :
 **authentication** : on crée un _authentication.middleware.js_, qui va se charger de vérifier si le token est envoyé, donc si l'utilisateur est bien connécté.
-**userAuthorization** : Vérifier si dans le token, l'id de l'utilisateur lui permet de faire ce qu'il demande.
-**roleAuthorization** : Vérifie si l'utilisateur possède le bon rôle pour effectuer sa requête.
+**userAuthorization** : on crée un _userAuthorization.middleware.js_, qui vérifie si dans le token, l'id de l'utilisateur lui permet de faire ce qu'il demande.
+**roleAuthorization** : on crée un _roleAuthorization.middleware.js_, qui vérifie si l'utilisateur possède le bon rôle pour effectuer sa requête.
 
 _Ex : Création d'un authenticationMiddleware :_ 
 ```js
@@ -798,11 +826,15 @@ _Dans task.router.js :_
 ```js
 // Midleware pour le token :
 const authenticationMiddleware = require('../middlewares/authentication.middleware');
+
+taskRouter.route('/')
+    .get(taskController.getAll)
+    .post(authenticationMiddleware(), bodyValidatorMiddleware() , taskController.insert)
+
 ```
 
 ### Déchiffrer le token :
-Dans jwt.utils.js :
-Pour décoder un token, on utilise la méthode verify() :
+Pour décoder un token, on utilise la méthode verify() dans _jwt.utils.js_ :
 ```js
 jwt.verify(token, JWT_SECRET, options, (error, playload) => {
                
@@ -813,8 +845,13 @@ jwt.verify(token, JWT_SECRET, options, (error, playload) => {
                 resolve(playload);/* Si pas d'erreur, on résoud la promesse et on renvoie le token*/
             })
 ```
+Comme pour sign(), cette méthode a plusieurs paramètres :
 
-### Utilisation : Créer des middlewares.
+- Le premier, c'est le token à décoder
+- Le deuxième, c'est le secret
+- Le troisième, ce sont les options
+- Le quatrième et dernier, c'est la fonction (callback) qui sera lancée à la fin de la vérification avec comme paramètre erreur et payload
+
 
 
 ## Gestion des données
