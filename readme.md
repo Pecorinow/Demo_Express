@@ -901,3 +901,5 @@ Comme pour sign(), cette méthode a plusieurs paramètres :
 
 
 ## Gestion des données
+
+    
