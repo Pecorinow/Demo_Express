@@ -1,20 +1,23 @@
 # Web API avec Express
-Une Api = un serveur qui va recevoir une **requête** (req), la traiter, potentiellement se "connecter" à des données (entre "" car les API intéragissent avec des données, mais pas forcément des bases de donnéés, même si c'est ça qu'on a fiat jusqu'ici) et renvoyer une **réponse** (res) qui possédera au minimm un statut (HttpCode), et potentiellement des données renvoyées (json, ou XML = ancêtre avant le json).
+Une Api = un serveur qui va recevoir une **requête** (req), la traiter, potentiellement se "connecter" à des données (entre "" car les API intéragissent avec des données, mais pas forcément des bases de donnéés, même si c'est ça qu'on a fait jusqu'ici) et renvoyer une **réponse** (res) qui possédera au minimm un statut (HttpCode), et potentiellement des données renvoyées (json, ou XML = ancêtre avant le json).
 ! Voir Schéma dans la documentaion du cours d'Aude !
 
-## Les requêtes
+## Les API
+
+### Fonctionement d'une API
+#### Les requêtes
 Les raquêtes sont envoyées via le protocole HTTP et pssèdent plusieurs infos qui vont permettre au serveur de comprendre la demande.
 
 Au minimum, il faut
 
-* Un verbe (Verb) : Méthodede la requête. Indique au serveur l'ACTION qu'on veut réaliser.
+* **Un verbe** (Verb) : Méthodede la requête. Indique au serveur l'ACTION qu'on veut réaliser.
     * **GET** : Récupérer quelque-chose (données, fichiers, images...)
     * **POST** : Envoyer quelque-chose. Peut être utilisé dans plusieurs contextes : envoyer les données d'un utilisateur pour les stocker qlq part et lui créer un compte, utilisateur qui envoie ses données pour se connecter (même si elles ne sont pas stockées, le POST sert juste à envoyer, pas focrément à stocker ce qui est envoyé)...
     * **PUT** : Modification **totale** de quelque-chose : si on modifie quelque-chose dans un objet, c'est tout l'objet qui est renvoyé après modification, comme si tout l'objet avait été modifié. Surtout utilisé pour les gros changements, mais en soi on pourrait l'utiliser pour tous types de changement, c'est juste moins propre si il n'y a que des petits changements à effectuer.
     * **PATCH** : Modification **partielle** : par exemple, si on ne modifie que son avatar sur son compte. Souvent, on utilise PATCH pour les images.
     * **DELETE** : Suppression de quelque-chose.
 
-* Une URL : Sur quoi et comment on veut faire notre requête. Elle peut contenir plusieurs éléments :
+* **Une URL** : Sur quoi et comment on veut faire notre requête. Elle peut contenir plusieurs éléments :
     * Au minimum, une partie, ou segment statique :     = Le QUOI
     ex: http://localhost:3000/api/produits = il faut au moins ce segment-là si on veut faire des modif ou récupérer qlqch dans les produits.
     * Des paramètres _(optionnel)_ = partie dynamique, car la valeur va pouvoir changer :   = Le QUOI, mais plus précis
@@ -59,8 +62,7 @@ Ensuite, on peut ajouter :
 > = Supprimer le produit dont l'id est 42.
 
 
-
-## Les réponses
+#### Les réponses
 L'API va toujours renvoyer une réponsequi sera composée de :
 * Un **statut** (statusCode, HTTPCode...) : code qui petrmet de savoir comment s'est passé la requête.
     * 2xx (dans les 200) : les codes de succès, selon le numéro ça peut vouloir dire "tout s'est bien passé et voici tes données", "tout s'est bien passé et je n'ai rien à te renvoyer"...
@@ -69,8 +71,8 @@ L'API va toujours renvoyer une réponsequi sera composée de :
     * 5xx : indiquer une erreur de serveur (serveur ne répond pas, db cassée, accès à la db ne fonctionne pas...) = plutôt des erreurs physiques.
 * Des **données** _(optionnel)_ = Certaines requêtes, notammnet en GET, vont nous renvoyer des données (souvent en json), par exemple un objet qu'on aura essayé de récupérer. 
 
-# Principes d'API REST :
-Une API REST (Ful) (REpresentation State Transfert) doit respecter le sprincipes suivants :
+### Principes d'API REST :
+Une API REST(Ful) (REpresentation State Transfert) doit respecter le sprincipes suivants :
 
 * **Stateless** (sans état) : Une API ne doit pas garder d'état => ne stockera pas qui est connecté en ce moment, c'est géré à l'extérieur.
 L'API ne savuegarde aucune donnée utilisateur. Si besoin d'identifier qui fait la requête, cette info devra être transmise dans la requête, soit dana la query, soit dans les headers, soit dans les cookies 🍪.
@@ -96,7 +98,7 @@ http://nodejs.org/fr pour avoir accès à Node et à son gestionnaire de package
 ```
 npm init
 ```
-Tout un tas de questions nous son tposées pour config le prijet. Appyuer su rEnter pour valider la valeur par défaut renseignée entre (). Le seul truc à modifier c'est éventiuellement le nom de ficher de point d'entrée (index.js -> app.js).
+Tout un tas de questions nous son tposées pour config le projet. Appyuer sur Enter pour valider la valeur par défaut renseignée entre (). Le seul truc à modifier c'est éventiuellement le nom de ficher de point d'entrée (index.js -> app.js).
 
 > Un fichier app.js est alors créé, il contient les commandes pour lancer le projet, les tests... dans un objet appelé **scripts** mais aussi les dépendances du projet qui se trouveront (pas tout de site mais plus tard) dans un objet appelé **dependencies**. Les dépendances sont une liste de librairies js dont notre projet a besoin pour fonctionner.
 
@@ -132,26 +134,46 @@ npm install express
 
 -> Express est maintenant installé dans le projet. Un fichier package-lock.json a été créé(sais po à quoi ça sert), et dans le fichier package.json de base, des dépendances ont été ajoutées, dans lesquelles on voit express !
 
-## Bonus : Récupérer un projet Node/Express :
+### Bonus : Récupérer un projet Node/Express :
 Quand on va récup un projet Node (Express, React, Angular...), il faudra refaire un node_modules avec toutes les dépendances du projet, en tapant dans la console :
 ```
 npm i
 ```
 
-## Création d'un serveur Web avec Express :
+### Création d'un serveur Web avec Express :
 
 Nous allons utiliser la librairie Express pour créer notre serveur. Pour ce faire, écrire dans app.js :
-```
-Voir dans le fichier app.js.
+
+```js
+const express = require('express'); //import d'express
+const server = express(); //création du serveur express
+
+// get sur localhost:3000
+server.get('/', (req, res) => {
+
+    res.send({ message : 'C\'est good'}, 200);
+})
+
+// get sur localhost:3000/products
+server.get('/products', (req, res) => {
+
+    res.send({ message : 'Voici tous les produits'}, 200);
+})
+
+
+// Écouter le serveur sur un port spécifique
+server.listen(3000, () => {
+    console.log(`🚀 Express Server started on port ${ 3000 }`);
+})
 ```
 
-## Restart du serveur en cas de modification :
+### Restart du serveur en cas de modification :
 Le point chiant de notre serveur actuel, c'est qu'à chaque modif il faut le couper avec **ctrl + c** et le relancer avec npm start.
 💡Mais il existe des solutions pour que le serveur se relance tout seul comme un grand à chaque sauvegarde :
 
 ### Méthode 1 : Nodemon (long et chiant, c'était pas mieux avant)
 Avant, il fallait télécharger une librairie appelée Nodemon.
-[Nodemon] est une librairie js qui permet de refresh et restart le server à chaqu esauvegarde.
+[Nodemon] est une librairie js qui permet de refresh et restart le server à chaque sauvegarde.
 Pour l'installer, il fallait :
 ```
 npm i -D nodemon
@@ -166,7 +188,7 @@ Il fallait ensuite rajouter le fichier package.json un nouveau script :
     }
 ```
 
-### Méthode 2 : Watch natif de Node depuis la version 18+
+#### Méthode 2 : Watch natif de Node depuis la version 18+
 Il suffit de rajouter un nouveau script dans package.json :
 ```json
     "scripts" : {
@@ -179,7 +201,7 @@ Pour lancer le serveur en mode dev, il faudra taper cette fois dans la console :
 npm run dev
 ```
 
-## Lrs variables d'environnement :
+### Les variables d'environnement :
 Ce sont des variables stockées sur notre machine. On y stocke des onfos de connection, ou propres à la mahcine...
 On évite de les partager.
 
@@ -200,9 +222,11 @@ Pour mettr eles variables d'environnement présentes dans le fichier .env dans l
         "dev" : "node --watch --env-file=.env app.js",
     }, // Donc ajouter --env-file=.env au milieu du reste.
 ```
-Les requêtes arrivent dans l'application (_app.js_) et sont dispatchés vers les fichiers de routes (_dossier routes_). En fonction de l'url, du verbe et des potentiels paramètres de routes, on déclenchera la bonne fonction du controller de la ressource  (_dossier controllers_). Ces controllers se chargent de la logique API, ils vont appeler des services (_dossier services_) qui eux se chargent d'intéragir avec les données. Le controlleur va ensuite, en fonction du résultat obtenu, répondre avec le bon code à la requête.
 
-## Architecture du projet :
+
+### Architecture du projet :
+
+Les requêtes arrivent dans l'application (_app.js_) et sont dispatchés vers les fichiers de routes (_dossier routes_). En fonction de l'url, du verbe et des potentiels paramètres de routes, on déclenchera la bonne fonction du controller de la ressource  (_dossier controllers_). Ces controllers se chargent de la logique API, ils vont appeler des services (_dossier services_) qui eux se chargent d'intéragir avec les données. Le controlleur va ensuite, en fonction du résultat obtenu, répondre avec le bon code à la requête.
 
 \> demo_express\
 |- 📁 controllers\
@@ -213,23 +237,23 @@ Les requêtes arrivent dans l'application (_app.js_) et sont dispatchés vers le
 |- .env\
 |- package.json
 
-> 1) 📁 routes\ : définition d etoutes les routes de notre API (Verb + url statique + params). = toutes les routes que prendra notre API (on aura un fichier pour toutes les routes d'utilisateurs, un pour les routes de blablabla). La request passe d'abord par là, avant de passer au controller.
-> 2) 📁 controllers\: définition de ce que renvoie l'API. C'est le controler qui renvoie une réponse reçue des services, sans passer par les routes.
-> 3) 📁 services\  : là où on trouve la logique d'intéraction/ d'accès aux données. Renvoie des services, ou des infos au controller.
-> 4) 📁 middleware\ : petit logiciel, ou fonction, qui intercepte la requête (ou une erreur) afin d'y ajouter/consulter des infos et choisir de continuer la requête, ou de l'arrêter. Sert de police à différents niveaux de la requête pour vérifier qu'on a bien les accès à certaines données 👮‍♂️. Il en existe 3 types :
+> 1) 📁 routes : définition d etoutes les routes de notre API (Verb + url statique + params). = toutes les routes que prendra notre API (on aura un fichier pour toutes les routes d'utilisateurs, un pour les routes de blablabla). La request passe d'abord par là, avant de passer au controller.
+> 2) 📁 controllers : définition de ce que renvoie l'API. C'est le controler qui renvoie une réponse reçue des services, sans passer par les routes.
+> 3) 📁 services  : là où on trouve la logique d'intéraction/ d'accès aux données. Renvoie des services, ou des infos au controller.
+> 4) 📁 middleware : petit logiciel, ou fonction, qui intercepte la requête (ou une erreur) afin d'y ajouter/consulter des infos et choisir de continuer la requête, ou de l'arrêter. Sert de police à différents niveaux de la requête pour vérifier qu'on a bien les accès à certaines données 👮‍♂️. Il en existe 3 types :
     router-lvl : middleware de routes, vérifient les accès à certaines routes.
     app-lvl : middlewares d'application, vérifient toutes les requêtes qui passent, sur toutes les requêtes du serveur 
     Tout à la fin du chemin (après les services) :  middleware d'erreur, gère les messages spécifiques à certaines erreurs.
 
     Voir Morgan : middleware qui fait des trucs apparemment, middleware de log ??
 
-## Définition des routes :
+### Définition des routes :
 ### Point d'entrée :
 On commence par créer le point d'entrée de toutes nos routes en créant un fichier **index.js** dans un dossier **routes** : Voir le fichier index.js dans routes.
 
 Dans ce fichier index.js :
 
-```
+```js
 const router = require('express').Router();
 
 router.get('/', (req, res) => {
@@ -240,20 +264,21 @@ module.exports = router;
 ```
 
 
-Dans le fichier app.js (après création server et avant listen) :
+Dans le fichier app.js (après création server et avant listen) on va indiquer que notre serveur Express doit utiliser ce routeur :
 
-```
+```js
 const router = require("./routes");
 server.use('/api', router);
 ```
 
-### Ajouter d'autres routes
+#### Ajouter d'autres routes
 
 Pour bien architecturer notre application, on va essayer de gérer les routes de chaque ressource individuellement. Pour cela, on va créer un routeur pour chaque type de ressources et faire le lien entre notre routeur d'entrée (index.js) et nos sous-routeurs.
+
 Pour créer un sous-routeur, on crée un fichier nomRessource.router.js.
 _exemple avec task.router.js_ :
 
-```
+```js
 const taskRouter = require('express').Router(); //création du sous-routeur task
 
 // en get sur localhost:3000/api/tasks/
@@ -279,7 +304,7 @@ module.exports = taskRouter;
 
 Pour donner accès à ce sous-routeur depuis notre fichier principal index.js :
 
-```
+```js
 // import du task routeur 
 const taskRouter = require('./task.router');
 
@@ -287,14 +312,32 @@ const taskRouter = require('./task.router');
 router.use('/tasks', taskRouter)
 ```
 
-### Autre manière d'écrire les routes :
+> [!TIP]
+> À ce stade, nous ne pouvons tester que nos routes en GET puisque le navigateur ne nous permet que de faire du GET. Pour pouvoir tester tous les verbes, nous aurons besoin de [logiciels de test d'API](#logiciels-test-api).
+
+
+#### Autre manière d'écrire les routes :
+
+Une autre façon de ranger les routes, quand on a plusieurs fois la même url mais avec différents verbes c'est de partir de l'url et indiquer toutes les méthodes possibles sur cette url.
+
+```js
+taskRouter.route('/')
+    .get((req, res) => { })
+    .post((req, res) => { })
+
+taskRouter.route('/:id')
+    .get((req, res) => { })
+    .put((req, res) => { })
+    .patch((req, res) => { })
+    .delete((req, res) => { })
+```
 
 ### Les controllers :
 Les controller ssont les endroits où on va gérer la requêtes (ce qui entre en req et sort en res). C'est ce qui décide d'où vont être envoyées les request et si elles peuvent ressortir en response.
 En général, on fait **un controller par type de ressources** -> Ici, on aura un task.controller, un category.controller...
 Un controller est un objet qui contient des fonctions à exécuter.
-Exemple : task.controller.js :
-```
+Exemple : _task.controller.js_ :
+```js
 // Création de notre taskController
 const taskController = {
 
@@ -304,6 +347,7 @@ const taskController = {
 module.exports = taskController;
 ```
 Chaque fonction représentera une action (getAll, insert...) qu'on peut faire sur la ressource en question :
+
 _task.controller.js_ :
 ```js
 // Création de notre taskController :
@@ -328,6 +372,7 @@ const taskController = {
 Attention, pour le moment il n'y a pas de code écrit dans les {}, ça va donc momentanément "casser" les requests.
 
 Il ne nous reste plus qu'à relier la route avec sa fonctionnalité **dans le taskRouter** :
+
 _task.router.js_ :
 ```js
 // importer le controleur qu'on vient de créer
@@ -347,15 +392,16 @@ taskRouter.route('/:id')
 taskRouter.get('/user/:name', taskController.getByUser)
 
 ```
-Pour que notre request ne soit pas infinie alors que nous n'avons pas encore de code dans notre controller, nous pouvons mettre fin à la request en envoyant un code 501 : Not implemented - qui signifie que la route existe mis que le code derrière n'a pas été implémenté (ou développé) par les dev.
+Pour que notre request ne soit pas infinie alors que nous n'avons pas encore de code dans notre controller, nous pouvons mettre fin à la request en envoyant un code 501 : _Not implemented_ - qui signifie que la route existe mais que le code derrière n'a pas été implémenté (ou développé) par les dev.
+
 ```js
 const taskController = {
     getAll : (req, res) => {res.send(501)}
 }
 ```
-
->Les DTO :
->Les DTO (Data Object Transfert) sont des représentations d'objets telles qu'elles entrent et sortent de l'API. Parfois à l'insertion l'objet n'est pas identique à celui en DB, donc on aura besoin d'un DTO d'entrée.Parfois, les objets renvoyés par l'API auront aussi besoin d'avoir des données ajoutées ou supprimées, pareil on aura besoin d'un DTO.
+> [!NOTE]
+>Les DTOs :
+>Les DTO (Data Object Transfert) sont des représentations d'objets telles qu'elles entrent et sortent de l'API. Parfois à l'insertion l'objet n'est pas identique à celui en DB, donc on aura besoin d'un DTO d'entrée. Parfois, les objets renvoyés par l'API auront aussi besoin d'avoir des données ajoutées ou supprimées, pareil on aura besoin d'un DTO de sortie.
 
 >DONC souvent, nos objet en entrée (req) et en sortie (res) ne possèdent pas les mêmes infos. 
 >ex : un objet en entrée (req) ne possédera pas d'id, mais il possédera un password, par contre en sortie il aura un id attribué par l'API, mais pas de password parce que cette info ne doit pas sortir de la BD.
@@ -363,21 +409,21 @@ const taskController = {
 >ex : à la création d'un compte, le paramètre 'isActive' n'est pas là en entrée, mais il est là en sortie après la création du compte.
 
 ### Les Services :
-C'ets l'endroit où on va gérer les accès aux données et la logique propre à la recherche / crééaton / suppression ddes données. Nos contolleurs vont appeler les bonne sméthodes dans les services appropriés.
+C'est l'endroit où on va gérer **la logique d'accès aux données** propre à la recherche / crééaton / suppression des données. Nos contolleurs vont appeler les bonnes méthodes dans les services appropriés.
 De nouveau, on fait en général **un service par type de ressource**.
+
 Dans un premier temps, on va travailler avec une **simulation** de DB (fake DB) avec de simples tableaux d'objets JavaScript.
 
 >[!Warning]
 >Nos tableaux ne sont pas sauvegardés et seront remis à 0 à chaque lancement du serveur, donc à chaque sauvegarde de modification du code !
 
 >[!Important]
-> Plus tard, nous verrons comment [se connecter à une base de données]
-(#connecter-son-api-à-une-db)
+> Plus tard, nous verrons comment [se connecter à une base de données](#connecter-son-api-à-une-db)
 
 >[!Note]
->Certaines données devront être cryptées dans la DB, notamment les mots de passe pour qu'elles ne soient pas lisible sà l'oeil nu. [Nous le ferons dans les services] (#hasher-des-données), car ça doit se faire AVANT l'insertion dans la DB !
+>Certaines données devront être cryptées dans la DB, notamment les mots de passe, pour qu'elles ne soient pas lisibles à l'oeil nu. [Nous le ferons dans les services](#hasher-des-données), car ça doit se faire AVANT l'insertion dans la DB !
 
-1) Création d'un dossier "services", et dedans, d'un fichier "task.service.js". Pour le moment, on va créer un dossier "fake" et un fichier "fakeTask.service.js" et travailler avec ça.
+1) Création d'un _dossier "services"_, et dedans, d'un fichier _"task.service.js"_. Pour le moment, on va créer un dossier _"fake"_ et un fichier "fakeTask.service.js" et travailler avec ça.
 2) Création d'un fichier fakeDB.js, qui représente notre fausse DB.
 
 ### Les middlewares :
@@ -389,7 +435,7 @@ Il existe plusieurs types de middlewares :
 (ex : la foncton use() dans app.js)
 * **Third-party** : les middlewares qui viennent de librairies externes et qui sont déjà tout faits.
 ex : [Multer](https://www.npmjs.com/package/multer), un des plus connus, qui permet de récup les images d'une req, les stocker sur le serveur...
-* **Home made** : les middlewaresq qu'on faits nous-mêmes.
+* **Home made** : les middlewares qu'on faits nous-mêmes.
 
 ...qu'on peut mettre à 3 endroits différents :
 * **Application** (App-lvl Middleware) : middleware qui sera activé sur toute l'app, donc à chaque requête ! Ici, le logMidlleware.
