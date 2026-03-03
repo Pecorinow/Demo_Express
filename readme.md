@@ -485,9 +485,49 @@ Attention : pour que le JSON puisse être lu par le serveur, ajouter une ligne a
 ```
 server.use(express.json());
 ```
+### Créer un nouveau document de test avec Insomnia
+Sur la page d'accueil, cliquez ici pour ajouter un nouveau projet :
+<div align="center">
+<img width="600px" src="./documentation/insomnia1.png" />
+</div>
+
+Une fois le projet créé, sur la partie droite, créez un nouveau document :
+<div align="center">
+<img width="600px" src="./documentation/insomnia2.png" />
+</div>
+
+Dans le document, nous allons créer nos requêtes à tester : 
+<div align="center">
+<img width="90%" src="./documentation/insomnia3.png" />
+</div>
+
+* 1 - Liste des requêtes à tester. Idéalement, chaque requête sera dans une dossier représentant la ressource sur laquelle on teste.
+* 2 - L'endroit pour changer la méthode et tester en GET, POST, PUT, PATCH, DELETE.
+* 3 - L'endroit pour setup l'url de la requête avec les éventuels paramètres
+* 4 - L'endroit pour configurer le body (ce qu'on veut envoyer lors d'un POST, PATCH ou PUT par ex)
+* 5 - Le bouton pour envoyer la requête
+* 6 - L'affichage de la réponse (code en haut et texte, json etc en dessous)
 
 ## Exporter un document :
 Cliquer sur Demo_Express -> Export -> Sélect les actions à exporter (GET, POST...) -> Export dans un dossier insomnia dans notre projet.
+
+**Exporter** : 
+<div align="center">
+<img width="70%" src="./documentation/insomnia4.png" />
+</div>
+
+Choisissez ensuite les requêtes à exporter puis choisssez Insomnia comme type de document puis validez.
+
+**Importer** :
+<div align="center">
+<img width="70%" src="./documentation/insomnia5.png" />
+</div>
+
+Sélectionnez votre fichier insomnia (ou postman), appuyez sur Scan et tada, votre collection se remplit.
+
+\> [Revenir à la suite du cours Express - Les controlleurs](#les-controlleurs)
+
+<hr>
 
 # Web API avec Mongoose 
 ## Connecter son API avec une DB
@@ -507,6 +547,7 @@ npm i mongoose
 ```
 Et bim c'est installé.
 
+### Établir une connection
 Dans le fichier app.js :
 Installer la connection avant les routes, donc avant le point 2 !!
 
@@ -540,7 +581,8 @@ Ici, avec l'url 'pouet', on reçoit un message d'erreur, car pouet n'est pas cor
 
 
 On a besoin, dans la méthode connect, de mettre l'url permettant de se connecter au serveur mongo (notre Cluster)
-[IMPORTANT] Par sécurité, on ne met JAMAIS écrire notre url dans le fichier app.js, sinon nos données de connexion se retrouvent en free access sur git.
+>[IMPORTANT]
+> Par sécurité, on ne met **JAMAIS** notre url dans le fichier app.js, sinon nos données de connexion se retrouvent en free access sur git.
 => On va donc utiliser notre fichier de variables d'environnement, .env !
 
 Dans le fichier .env, on ajoute une DB_CONNEXION :
@@ -586,7 +628,7 @@ module.exports = NomRessource;
 
 Dans le schema :
 
-dans le premier objet, on dessine à quoi ressemble la ressource
+* dans le premier objet, on dessine à quoi ressemble la ressource
 ```js
 
 {
@@ -604,7 +646,7 @@ dans le premier objet, on dessine à quoi ressemble la ressource
 }
 ```
 
-dans le deuxième objet, on fourni les informations sur la collection
+* dans le deuxième objet, on fourni les informations sur la collection
 ```js
 { 
     /* Nom de la collection dans Mongo */
@@ -660,7 +702,6 @@ const categorySchema = new Schema(
 ```
 Voir le task.model et le user.model pour les petites subtilités de ces fichiers.
 
-
 Maintenant qu'on a créé une vraie DB avec Mongoose et nos models, on veut importer de VRAIS services dans nos **controllers** =>
 - créer les fichiers vraiService dans le dossier services -> mongo,
 - remplacer tous les fakeTaskService par des taskService et importer les taskService,
@@ -706,13 +747,6 @@ Voir le reste du category.controller pour les petites subtilités des autres res
 
 
 ### Utiliser ces modèles dans nos services :
-```js
-const ressourceCree = nomModel(valeursAAjouter);
-// Créer un objet en respectant le schema du model
-
-ressourceCree.save(); // sauvegarde cet objet en DB
-```
-
 Maintenant que les modèles sont faits, nous avons accès à plusieurs méthodes pour effectuer des actions dans la DB :
 ```js
 
@@ -735,6 +769,7 @@ nomModel.deleteMany({ /* filtre */ });//Supprime tous les élements qui correspo
 ```
 
 ## Hasher des données
+Nous allons voir comment hasher des données avec l'ajout d'un hash sur le mot de passe des utilisateurs.
 Pour gérer les utilisateurs, on crée souvent la partie création de compte et connexion dans une partie nommée "Auth". Nous allons  donc créer une route Auth, un authController et un authService.
 
 Pour hasher, nous avons besoin d'une libreirie de hashage. Nous allons utiliser [Argon2]https://www.npmjs.com/package//argon2, mais il existe aussi Bicrypt et d'autres.
@@ -759,7 +794,7 @@ Pour vérifier si un mot de passe correspond à la version hashée :
 ```
 
 ## Rajouter l'authentification avec JWT
-[JWT - Json Web Token] est le moyen le plus connu et utilisé de créer un jeton qui permet d'identifier qui est actuellement en train de faire la requête.
+[JWT - Json Web Token](https://en.wikipedia.org/wiki/JSON_Web_Token) est le moyen le plus connu et utilisé de créer un jeton qui permet d'identifier qui est actuellement en train de faire la requête.
 Cela permettra, sur certaines routes, de mettre en place de la sécurité et de permettre l'accès aux (à la) ressource(s) uniquement à certains utilisateurs
 
 ### Installer Json Web Token :
@@ -786,10 +821,10 @@ Dans _jwt.utils.js_, avec la librairie jsonwebtoken nous avons accès à une mé
 ```
 Cette méthode, sign(), a plusieurs paramètres :
 
-- payload, le 1er paramètre, est un objet contenant les informations qu'on veut stocker dans le token.
-- JWT_SECRET, le 2ème paramètre, est une variable d'environnement contenant le code secret qui sert à encoder et décoder le token. (⚠️ : Pensez à bien le mettre dans vos variables d'env, il ne doit jamais être divulgué)
-- options, le 3ème paramètre, est un objet qui contient les paramètres d'encodage du token avec le type d'encodage, la date d'expiration etc
-- Un callback, le 4ème paramètre, qui est une fonction déclenchée lors de la signature du token. Cette fonction possède 2 paramètres, le premier contient une erreur s'il y en a une, le deuxième contient le token si pas d'erreur.
+* **payload**, le 1er paramètre, est un objet contenant les informations qu'on veut stocker dans le token.
+* **JWT_SECRET**, le 2ème paramètre, est une variable d'environnement contenant le code secret qui sert à encoder et décoder le token. (⚠️ : Pensez à bien le mettre dans vos variables d'env, il ne doit jamais être divulgué)
+* **options**, le 3ème paramètre, est un objet qui contient les paramètres d'encodage du token avec le type d'encodage, la date d'expiration etc
+* **Un callback**, le 4ème paramètre, qui est une fonction déclenchée lors de la signature du token. Cette fonction possède 2 paramètres, le premier contient une erreur s'il y en a une, le deuxième contient le token si pas d'erreur.
 
 >REMARQUE :
 >Promise VS try/catch :
@@ -821,8 +856,6 @@ Pour le secret, aller sur LatPass et générer un code => le mettre dans .env.
 Ce **secret** = code secret qui va servir à signer (ou encoder) et à décoder le jeton.
 ATTENTION : ce code ne doit JAMAIS finir ur Git !!
 
-
-
 Ensuie, on importe le jwtUtils dans la fonction login du _auth.controller.js_ :
 ```js
 else {
@@ -841,13 +874,27 @@ else {
 
 
 ### Envoyer le token avec la requete :
-Un token, ou jeton, s'envoie en l'ajoutant dans les Headers de la requête (sur Insomnia). Quand on sera en React, on ajoutera nous-même aux headers de la requ ce fameux jeton qu'on aura stocké au préalable dans le navigateur.
-Sur Insomnia, il y a un bouton tout prêt.
+Un token, ou jeton, s'envoie en l'ajoutant dans les **headers** de la requête (sur Insomnia). Quand on sera en React, on ajoutera nous-même aux headers de la request ce fameux jeton qu'on aura stocké au préalable dans le navigateur.
+Sur Insomnia, il y a un bouton tout prêt qui permet d'ajout le token dans les headers de la requête.
 
 Sur Insomnia, copier le token d'un user. Depuis Tasks/insert, aller sur Auth -> Inherit from parent : Bearer Token (car jwt est un Bearer Token).
--> À côté Token, coller le token.
+-> À côté de Token, coller le token.
 Le header dans lequel on aura ajouté ce token s'appelle "Authorization".
 
+Cliquer sur le bouton Auth :
+<div align="center">
+<img src="./documentation/token_insomnia1.png" />
+</div>
+
+Sélectionner Bearer Token dans la liste :
+<div align="center">
+<img src="./documentation/token_insomnia2.png" />
+</div>
+
+On copie son token :
+<div align="center">
+<img src="./documentation/token_insomnia3.png" />
+</div>
 
 ### Création de middlewares pour récup le token :
 On va créer un middleware pour chaque vérification qu'on veut faire, dans un sous-dossier 'auth' du dossier 'middlewares' :
@@ -899,7 +946,52 @@ Comme pour sign(), cette méthode a plusieurs paramètres :
 - Le quatrième et dernier, c'est la fonction (callback) qui sera lancée à la fin de la vérification avec comme paramètre erreur et payload
 
 
+## Gestion des fichiers
 
-## Gestion des données
+Pour envoyer des fichiers dans notre API, il existe plusieurs librairies qui permettent de traiter le fichier reçu et l'ajouter dans un dossier sur le serveur de notre API.
+Une de ces librairies s'appelle [Multer](https://www.npmjs.com/package/multer) et vous pourrez trouver une démonstration [en cliquant sur le lien suivant](https://gitlab.com/i3namurfs/demonodemulterfsi3namur).
+
+<hr>
+
+## Validation des données entrantes
+
+Pour vérifier si les données qui arrivent dans notre api via le body ont le format attendu, nous pouvons utiliser une librairie de schémas de validation.
+Une des plus connues s'appelle [Yup](https://github.com/jquense/yup).
+
+Voici un [projet](https://gitlab.com/i3namurfs/expressfilrougei3) dans lequel cette validation est présente si vous souhaitez y jeter un oeil.
+* dans le dossier **validators**, vous trouverez tous les schémas de validation
+* dans le dossier **middlewares**, vous trouverez le body-validation, qui prend en paramètre le schema de validation à valider. Si tout est ok, on continue la requête, sinon, on enverra une 400 Bad Request.
+* dans les fichiers de **routes**, vous verrez ce middleware appliqué avec le schéma approprié dans tous les post, put et patch.
+
+<hr>
+
+## Mise en place de Swagger
+[Swagger](https://swagger.io/) est une librairie de **documentation** d'API. Elle permet d'avoir une interface graphique qui permet de tester toutes les routes avec des informations sur ce qui est attendu dans le body, en sortie, dans les paramètres, la query ainsi que les codes http possibles en retour.
+
+<div align="center"> 
+<img width="80%" src="https://imagedelivery.net/PVooPtpJE-25QaNkbEuXvw/0117d73b-b327-45ff-f333-0af511c52b00/public" />
+</div>
+
+Il existe une [librairie js Swagger](https://www.npmjs.com/package/swagger-ui-express) pour l'ajouter dans votre projet API mais attention, sa mise en place est un peu fastidieuse.
+<hr>
+
+## Bonus
+### Utilitaires : 
+
+L'extension VSC [TODO+](https://marketplace.visualstudio.com/items?itemName=fabiospampinato.vscode-todo-plus) vous permet de faire des todo list.
+Pour gérer les tâches : 
+* ALT + ENTER : Créer une tâche
+* ALT + D : Done (Marquer comme faite)
+* ALT + S : Started (Marquer comme commencée)
+* ALT + C : Cancelled (Marquer comme annulée)
+
+### Librairies sympa pour pimper votre API
+
+[http-status-code](https://www.npmjs.com/package/http-status-codes) est une librairie contenant une énumération des status Http pour gérer plus facilement les réponses de l'API.
+Une fois que vous l'aurez installé, dans votre code, vous aurez l'auto-complétion qui proposera les codes possibles avec un nom plus clair que juste un nombre.\
+_ex :_
+```js
+res.status(StatusCodes.OK).json(/* Ce que vous renvoyez */)
+```
 
     
