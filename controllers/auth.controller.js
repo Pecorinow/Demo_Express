@@ -40,13 +40,14 @@ const authController = {
             // Si pas d'utilisateur trouvé => les infos n'éteiant pas bonnes :
             if(!userFound) {
                 res.status(401).json({statusCode : 401, message : 'Les informations de connexion sont erronées'})
-            } else {
+            } else { // Sinon...
+
                 // On va lui générer un token :
                const token = await jwtUtils.generate(userFound);
                     // La fonction generate est importée de jwt.utils.js.
                     // Si ça plante, on est renvoyé au catch(err) direct, si ça réussit on continue ici-en-dessous.
 
-                // On renvoie quelques infos de l'utilisateur  le token :
+                // On renvoie quelques infos de l'utilisateur + le token :
                 res.status(200).json({
                     id : userFound._id,
                     firstname : userFound.firstname,

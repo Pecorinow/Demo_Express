@@ -8,9 +8,6 @@ const userService = {
             //? Récupérer ce qu'on reçu dans la query pour rajouter des filtres de recherche :
             const users = await User.find()
                                     .select()
-
-
-            const users = await User.find()
             
             return users;
         }

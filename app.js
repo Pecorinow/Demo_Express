@@ -23,9 +23,26 @@ const {PORT, DB_CONNEXION} = process.env;
 server.use(express.json());
     // = Indique que le serveur doit utiliser un petit middleware, la fonction json(), pour lire le JSON !
 
-// Utilisation d'un middleware qu'on a fait :
+// ------ Utilisation d'un middleware qu'on a fait :
 const logMiddleware = require('./middlewares/log.middleware'); //! Attention, cette ligne s'ajoute toute seule dès qu'on écrit la ligne suivante server.use => la chercher dans le fichier et la replacer avant !
 server.use(logMiddleware()); // = J'utiliser le middleware importé à la ligne précédente => RENVOIE AU LOG.MIDDLEWARE !
+
+//------- Utilisation du middleware cors :
+const cors = require('cors');
+
+    // Configuration "Tout le monde est autorisé à consommer notre API", parfait pour du Dev :
+server.use(cors());
+    
+    
+    // Configuration pour de la production : "Autroriser uniquement pour notre appli react" :
+// server.use(cors({
+//     origin : 'http://localhost:5173',
+//     methods : ['GET', 'POST', 'PUT', 'PATCH', 'DELETE'],
+
+// }))
+    // = autorise uniquement cette url à comsommer l'API, avec les méthodes mentionnées
+
+
 
 //----------------------------
 //-----Connection à la DB-----
