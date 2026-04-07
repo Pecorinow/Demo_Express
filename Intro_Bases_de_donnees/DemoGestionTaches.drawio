@@ -370,7 +370,7 @@
           <mxGeometry height="60" width="230" x="-400" y="600" as="geometry" />
         </mxCell>
         <mxCell id="9yVZ5H1YFMO19k09wPsK-74" parent="1" style="shape=table;startSize=30;container=1;collapsible=1;childLayout=tableLayout;fixedRows=1;rowLines=0;fontStyle=1;align=center;resizeLast=1;html=1;whiteSpace=wrap;fillColor=#6a00ff;fontColor=#ffffff;strokeColor=#3700CC;gradientColor=default;gradientDirection=east;" value="Friendship" vertex="1">
-          <mxGeometry height="120" width="180" x="380" y="360" as="geometry" />
+          <mxGeometry height="120" width="180" x="390" y="360" as="geometry" />
         </mxCell>
         <mxCell id="9yVZ5H1YFMO19k09wPsK-75" parent="9yVZ5H1YFMO19k09wPsK-74" style="shape=tableRow;horizontal=0;startSize=0;swimlaneHead=0;swimlaneBody=0;fillColor=none;collapsible=0;dropTarget=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;top=0;left=0;right=0;bottom=0;html=1;" value="" vertex="1">
           <mxGeometry height="30" width="180" y="30" as="geometry" />
