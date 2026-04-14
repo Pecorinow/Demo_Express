@@ -93,7 +93,7 @@ const router = require('./routes'); // = import de l'objet router, le routeur pr
 server.use('/api', router); // = indiquer au serveur d'utiliser le router importé.
 
 //* On ajoute /api comme condition pour lancer le router, pour préciser qu'on veut avoir accès à l'API en backend, donc à l'url http://localhost:3000/api/tasks, et pas à la liste des tâches (ou catégories, si l'url finissait par category) qui apparaîtrait en front si on lançait http://localhost:3000/tasks sans le /api.
-// -> Après, la suite se passe dans le fichier index.js.
+// -> Après, la suite se passe dans le dossier routes, dans le fichier index.js.
 
 
 //! 3) Écouter le serveur sur un port spécifique
