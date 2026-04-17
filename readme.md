@@ -482,7 +482,7 @@ ex :
 }
 ```
 Attention : pour que le JSON puisse être lu par le serveur, ajouter une ligne avant le point 2 de app.js :
-```
+```js
 server.use(express.json());
 ```
 ### Créer un nouveau document de test avec Insomnia
@@ -539,7 +539,7 @@ Pour connecter notre API à une base de données, nous allons utiliser un ORM (O
 [Sequelize](https://sequelize.org/) est l'ORM le plus utilisé quand on fait du SQL. [TypeOrm](https://typeorm.io/) est son grand frère, prévu si on fait notre API en TypeScript.
 
 ### Mongoose (MongoDB - NoSQL)
-[Mongoose](https://mongoosejs.com/) est l'ODM prévu pour travailler avec MongoDB.
+[Mongoose](https://mongoosejs.com/) est l'ODM prévu pour travailler avec MongoDB en no-SQL.
 
 ## Installer Mongoose :
 ```
