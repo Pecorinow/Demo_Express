@@ -1,6 +1,6 @@
 const { Schema, model } = require('mongoose'); // Importer Mongoose pour créer des Schemas.
 
-// Créer un nouveau schema pour décrire à quoi ressemble une category :
+// Créer un nouveau schema pour décrire à quoi ressemble un user :
 const userSchema = new Schema(
     {
         firstname : {
@@ -30,7 +30,7 @@ const userSchema = new Schema(
             default : 'User' // donne à l'utilisateur le rôle User par défaut si on ne renseigne pas de rôle, ce sera User qui sera inséré.
         }
     },{
-        collection : 'User', // Mettre le nom de la collection avec laquelle on drvra intéragir en DB (voir ce qu'on a écrit dans Mongoose)
+        collection : 'User', // Mettre le nom de la collection avec laquelle on devra intéragir en DB (voir ce qu'on a écrit dans Mongoose)
         timestamps : true
         // Pour ajouter 2 champs automatiquement :
     // createAt : date -> date de création de la catégorie

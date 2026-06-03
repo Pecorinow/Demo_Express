@@ -37,7 +37,7 @@ const authController = {
             // Tenter de trouver l'utilisateur qui correspond à ces données :
             const userFound = await authService.findByCredential(credentials);
 
-            // Si pas d'utilisateur trouvé => les infos n'éteiant pas bonnes :
+            // Si pas d'utilisateur trouvé => les infos n'étaient pas bonnes :
             if(!userFound) {
                 res.status(401).json({statusCode : 401, message : 'Les informations de connexion sont erronées'})
             } else { // Sinon...

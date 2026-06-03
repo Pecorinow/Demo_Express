@@ -180,7 +180,7 @@ const taskController = {
             if(await taskService.delete(id)) {
                 res.sendStatus(204);
             } else {
-                res.sendStatus(204).json( {statusCode : 404, message : 'Cette tâche \'a pas été trouvée'})
+                res.sendStatus(204).json( {statusCode : 404, message : 'Cette tâche n\'a pas été trouvée'})
             }
 
         } catch(err) {

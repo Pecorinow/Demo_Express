@@ -852,7 +852,8 @@ JWT_ISSUER = "";
 JWT_AUDIENCE = "";
 JWT_SECRET = "";
 ```
-Pour le secret, aller sur LatPass et générer un code => le mettre dans .env.
+JWT_ADIENCE et JWT_ISSUER : on peut les inventer soi-même. 
+Pour le secret, soit inventer soi-même un code hyper aléatoire, soit aller sur LatPass et générer un code => le mettre dans .env.
 Ce **secret** = code secret qui va servir à signer (ou encoder) et à décoder le jeton.
 ATTENTION : ce code ne doit JAMAIS finir ur Git !!
 
@@ -877,7 +878,8 @@ else {
 Un token, ou jeton, s'envoie en l'ajoutant dans les **headers** de la requête (sur Insomnia). Quand on sera en React, on ajoutera nous-même aux headers de la request ce fameux jeton qu'on aura stocké au préalable dans le navigateur.
 Sur Insomnia, il y a un bouton tout prêt qui permet d'ajout le token dans les headers de la requête.
 
-Sur Insomnia, copier le token d'un user. Depuis Tasks/insert, aller sur Auth -> Inherit from parent : Bearer Token (car jwt est un Bearer Token).
+Sur Insomnia, se connecter avec la route login à un compte existant -> ça génère un token. Copier le token du user. 
+Depuis le dossier parent d'une route protégée (par exemple, depuis le dossier Tasks qui nécessite une connexion pour accéder à ses routes), aller sur -> Inherit from parent : Bearer Token (car jwt est un Bearer Token).
 -> À côté de Token, coller le token.
 Le header dans lequel on aura ajouté ce token s'appelle "Authorization".
 
